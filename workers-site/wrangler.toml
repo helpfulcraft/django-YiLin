@@ -1,0 +1,13 @@
+name = "django-yilin"
+type = "webpack"
+account_id = ""  # 你需要填写你的Cloudflare账户ID
+workers_dev = true
+route = ""
+zone_id = ""  # 你需要填写你的域名zone ID（如果有自定义域名）
+
+[site]
+bucket = "./public"
+entry-point = "workers-site"
+
+[env.production]
+name = "django-yilin-prod"

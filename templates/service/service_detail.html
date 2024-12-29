@@ -1,0 +1,177 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load service_extras %}
+
+{% block title %}{{ service.name }} - 福祉网站{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home:home' %}">首页</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'service:list' %}">服务项目</a></li>
+            <li class="breadcrumb-item active">{{ service.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- 服务详情 -->
+        <div class="col-lg-8">
+            <div class="card shadow-lg mb-4">
+                {% if service.image %}
+                <img src="{{ service.image.url }}" class="card-img-top service-detail-image" alt="{{ service.name }}">
+                {% endif %}
+                <div class="card-body">
+                    <h2 class="card-title text-primary mb-3">{{ service.name }}</h2>
+                    
+                    <div class="service-meta mb-3">
+                        <span class="badge bg-info me-2">
+                            <i class="fas fa-tag me-1"></i>{{ service.category.name }}
+                        </span>
+                        <span class="badge bg-secondary">
+                            <i class="fas fa-star me-1"></i>平均评分: {{ service.average_rating|default:"暂无评分" }}
+                        </span>
+                    </div>
+
+                    <p class="card-text lead text-muted mb-4">{{ service.short_description }}</p>
+
+                    <div class="service-content">
+                        <h4 class="text-primary mb-3">服务详情</h4>
+                        {{ service.content|safe }}
+                    </div>
+
+                    {% comment %}
+                    <div class="service-features mt-4">
+                        <h4 class="text-primary mb-3">服务特点</h4>
+                        <ul class="list-group list-group-flush">
+                            {% for feature in service.features.split ',' %}
+                            <li class="list-group-item">
+                                <i class="fas fa-check-circle text-success me-2"></i>{{ feature|trim }}
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endcomment %}
+
+                </div>
+            </div>
+
+            <!-- 服务评价 -->
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-comments me-2"></i>服务评价 ({{ reviews.count }})
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if reviews %}
+                        {% for review in reviews %}
+                        <div class="review mb-3 pb-3 border-bottom">
+                            <div class="review-header d-flex justify-content-between align-items-center mb-2">
+                                <div class="reviewer-info">
+                                    <strong>{{ review.user.username }}</strong>
+                                    <span class="text-muted ms-2">{{ review.created_at|date:"Y-m-d H:i" }}</span>
+                                </div>
+                                <div class="review-rating">
+                                    {% for _ in review.rating|get_range %}
+                                        <i class="fas fa-star text-warning"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <p class="review-content">{{ review.content }}</p>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center">暂无评价</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 侧边栏 -->
+        <div class="col-lg-4">
+            <div class="card shadow-lg mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-calendar-check me-2"></i>立即预约
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if user.is_authenticated %}
+                        <form method="get" action="{% url 'service:make_appointment' service.pk %}">
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="fas fa-calendar-plus me-2"></i>预约 {{ service.name }}
+                            </button>
+                        </form>
+                        <hr>
+                        <div class="appointment-info">
+                            <h5 class="text-primary">预约须知</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-check-circle text-success me-2"></i>预约免费</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i>24小时内审核</li>
+                                <li><i class="fas fa-check-circle text-success me-2"></i>可随时取消预约</li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <div class="text-center">
+                            <p class="text-muted">请先登录以预约服务</p>
+                            <a href="{% url 'user:login' %}" class="btn btn-outline-primary">
+                                <i class="fas fa-sign-in-alt me-2"></i>登录
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card shadow-lg">
+                <div class="card-header bg-info text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-info-circle me-2"></i>服务联系方式
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <ul class="list-unstyled">
+                        <li class="mb-2">
+                            <i class="fas fa-phone text-primary me-2"></i>
+                            服务热线: {{ service.contact_phone|default:"暂无" }}
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-envelope text-primary me-2"></i>
+                            电子邮箱: {{ service.contact_email|default:"暂无" }}
+                        </li>
+                        <li>
+                            <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                            服务地址: {{ service.address|default:"暂无" }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.service-detail-image {
+    max-height: 400px;
+    object-fit: cover;
+}
+.review {
+    transition: background-color 0.3s ease;
+}
+.review:hover {
+    background-color: #f8f9fa;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Add any interactive features for the service detail page
+});
+</script>
+{% endblock %}

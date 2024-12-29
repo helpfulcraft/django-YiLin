@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}管理报名 - {{ activity.title }} - 福祉网站{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'volunteer:activity_list' %}">志愿活动</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'volunteer:activity_detail' activity.pk %}">{{ activity.title }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">管理报名</li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title mb-4">管理报名</h2>
+            
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>申请人</th>
+                            <th>申请时间</th>
+                            <th>申请留言</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for application in applications %}
+                        <tr>
+                            <td>{{ application.user.username }}</td>
+                            <td>{{ application.created_time|date:"Y-m-d H:i" }}</td>
+                            <td>{{ application.message|default:"无" }}</td>
+                            <td>
+                                {% if application.status == 'pending' %}
+                                <span class="badge bg-warning">待审核</span>
+                                {% elif application.status == 'approved' %}
+                                <span class="badge bg-success">已通过</span>
+                                {% elif application.status == 'rejected' %}
+                                <span class="badge bg-danger">已拒绝</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if application.status == 'pending' %}
+                                <div class="btn-group btn-group-sm">
+                                    <form method="post" action="{% url 'volunteer:update_application_status' activity.pk application.pk %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="status" value="approved">
+                                        <button type="submit" class="btn btn-success btn-sm">通过</button>
+                                    </form>
+                                    <form method="post" action="{% url 'volunteer:update_application_status' activity.pk application.pk %}" class="d-inline ms-1">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="status" value="rejected">
+                                        <button type="submit" class="btn btn-danger btn-sm">拒绝</button>
+                                    </form>
+                                </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">暂无报名申请</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="mt-4">
+                <a href="{% url 'volunteer:activity_detail' activity.pk %}" class="btn btn-outline-secondary">返回活动详情</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

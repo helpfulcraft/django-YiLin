@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}健康信息 - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'user:profile' %}">个人中心</a></li>
+            <li class="breadcrumb-item active" aria-current="page">健康信息</li>
+        </ol>
+    </nav>
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title mb-0">健康信息</h4>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="height" class="form-label">身高(cm)</label>
+                                <input type="number" step="0.1" class="form-control" id="height" name="height" value="{{ health_info.height|default_if_none:'' }}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="weight" class="form-label">体重(kg)</label>
+                                <input type="number" step="0.1" class="form-control" id="weight" name="weight" value="{{ health_info.weight|default_if_none:'' }}">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="blood_type" class="form-label">血型</label>
+                            <select class="form-select" id="blood_type" name="blood_type">
+                                {% for value, label in health_info.BLOOD_TYPE_CHOICES %}
+                                <option value="{{ value }}" {% if health_info.blood_type == value %}selected{% endif %}>{{ label }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="allergies" class="form-label">过敏史</label>
+                            <textarea class="form-control" id="allergies" name="allergies" rows="2">{{ health_info.allergies }}</textarea>
+                            <div class="form-text">请填写您的过敏史，包括药物、食物等过敏情况</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="medical_history" class="form-label">既往病史</label>
+                            <textarea class="form-control" id="medical_history" name="medical_history" rows="3">{{ health_info.medical_history }}</textarea>
+                            <div class="form-text">请填写您的既往病史，包括慢性病、手术史等</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="medications" class="form-label">当前用药</label>
+                            <textarea class="form-control" id="medications" name="medications" rows="2">{{ health_info.medications }}</textarea>
+                            <div class="form-text">请填写您目前正在服用的药物</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="emergency_medical_info" class="form-label">紧急医疗信息</label>
+                            <textarea class="form-control" id="emergency_medical_info" name="emergency_medical_info" rows="3">{{ health_info.emergency_medical_info }}</textarea>
+                            <div class="form-text">请填写紧急情况下医护人员需要知道的重要信息</div>
+                        </div>
+                        
+                        <div class="alert alert-info" role="alert">
+                            <i class="bi bi-info-circle me-2"></i>这些信息将帮助我们在紧急情况下为您提供更好的服务。所有信息都将严格保密。
+                        </div>
+                        
+                        <div class="text-end mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-circle me-1"></i>保存更改
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

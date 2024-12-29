@@ -1,0 +1,155 @@
+{% if services %}
+<div class="row g-4">
+    {% for service in services %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 service-card">
+            <!-- 状态徽章 -->
+            <div class="status-badge">
+                {% if service.status == 'pending' %}
+                    <span class="badge bg-warning text-dark">待审核</span>
+                {% elif service.status == 'ongoing' %}
+                    <span class="badge bg-primary">进行中</span>
+                {% elif service.status == 'completed' %}
+                    <span class="badge bg-success">已完成</span>
+                {% elif service.status == 'cancelled' %}
+                    <span class="badge bg-secondary">已取消</span>
+                {% endif %}
+            </div>
+
+            <!-- 服务内容 -->
+            <div class="card-body">
+                <h5 class="card-title">
+                    <a href="{% url 'service:detail' service.service.id %}" class="text-decoration-none">
+                        {{ service.service.title }}
+                    </a>
+                </h5>
+                
+                <div class="card-text">
+                    <div class="mb-2">
+                        <i class="bi bi-clock text-muted"></i>
+                        <small class="text-muted">申请时间：{{ service.created_time|date:"Y-m-d H:i" }}</small>
+                    </div>
+                    <div class="mb-2">
+                        <i class="bi bi-calendar-check text-muted"></i>
+                        <small class="text-muted">服务时间：{{ service.service_time|date:"Y-m-d H:i" }}</small>
+                    </div>
+                    <div class="mb-2">
+                        <i class="bi bi-geo-alt text-muted"></i>
+                        <small class="text-muted">服务地点：{{ service.address }}</small>
+                    </div>
+                    {% if service.status == 'completed' and service.review %}
+                    <div class="mb-2">
+                        <i class="bi bi-star-fill text-warning"></i>
+                        <small class="text-muted">评分：{{ service.review.rating }} 星</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 卡片底部操作按钮 -->
+            <div class="card-footer bg-transparent border-top-0">
+                <div class="d-flex justify-content-end">
+                    {% if service.status == 'pending' %}
+                        <a href="{% url 'service:appointment_cancel' service.id %}" 
+                           class="btn btn-sm btn-outline-danger cancel-service"
+                           data-bs-toggle="tooltip"
+                           title="取消申请">
+                            <i class="bi bi-x-circle"></i> 取消申请
+                        </a>
+                    {% elif service.status == 'completed' and not service.review %}
+                        <button type="button" 
+                                class="btn btn-sm btn-outline-primary"
+                                data-bs-toggle="modal"
+                                data-bs-target="#reviewModal{{ service.id }}"
+                                title="评价服务">
+                            <i class="bi bi-star"></i> 评价服务
+                        </button>
+                    {% elif service.status == 'completed' and service.review %}
+                        <button type="button" 
+                                class="btn btn-sm btn-outline-secondary"
+                                disabled
+                                title="已评价">
+                            <i class="bi bi-check-circle"></i> 已评价
+                        </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5">
+    <i class="bi bi-inbox display-1 text-muted"></i>
+    <p class="lead text-muted mt-3">暂无服务记录</p>
+    <a href="{% url 'service:list' %}" class="btn btn-primary mt-3">
+        <i class="bi bi-plus-circle"></i> 预约新服务
+    </a>
+</div>
+{% endif %}
+
+<!-- 评价模态框 -->
+{% for service in services %}
+    {% if service.status == 'completed' %}
+        <div class="modal fade" id="reviewModal{{ service.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">评价服务</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" action="{% url 'service:review_create' service.id %}">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label class="form-label">服务评分</label>
+                                <div class="rating">
+                                    {% for i in "54321"|make_list %}
+                                        <input type="radio" id="star{{ i }}{{ service.id }}" name="rating" value="{{ i }}" required>
+                                        <label for="star{{ i }}{{ service.id }}" title="{{ i }}星">★</label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="comment{{ service.id }}" class="form-label">评价内容</label>
+                                <textarea class="form-control" id="comment{{ service.id }}" name="comment" rows="3" required></textarea>
+                            </div>
+                            
+                            <div class="text-end">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                <button type="submit" class="btn btn-primary">提交评价</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endfor %}
+
+<style>
+.rating {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+}
+
+.rating input {
+    display: none;
+}
+
+.rating label {
+    cursor: pointer;
+    font-size: 30px;
+    color: #ddd;
+    margin: 0 5px;
+}
+
+.rating label:hover,
+.rating label:hover ~ label,
+.rating input:checked ~ label {
+    color: #ffd700;
+}
+</style>

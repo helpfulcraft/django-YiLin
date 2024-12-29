@@ -1,0 +1,175 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}志愿活动 - 益邻{% endblock %}
+
+{% block content %}
+<!-- 顶部横幅 -->
+<div class="volunteer-banner">
+    <div class="banner-overlay">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center text-white">
+                    <h1 class="display-4 fw-bold mb-4">志愿服务活动</h1>
+                    <p class="lead mb-4">加入我们，用爱心温暖社区，让每一位老人感受到社会的关爱</p>
+                    <div class="banner-stats d-flex justify-content-center gap-4">
+                        <div class="stat-item">
+                            <h3 class="fw-bold">{{ activities.count }}</h3>
+                            <p class="mb-0">进行中的活动</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3 class="fw-bold">{{ total_volunteers }}</h3>
+                            <p class="mb-0">志愿者人数</p>
+                        </div>
+                        <div class="stat-item">
+                            <h3 class="fw-bold">{{ total_hours }}</h3>
+                            <p class="mb-0">服务总时长</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container py-5">
+    <!-- 志愿者价值 -->
+    <div class="row mb-5">
+        <div class="col-md-4 text-center mb-4 mb-md-0">
+            <div class="feature-box p-4">
+                <i class="bi bi-people-fill display-4 text-primary mb-3"></i>
+                <h4>社区互助</h4>
+                <p class="text-muted">建立温暖互助的社区关系网络</p>
+            </div>
+        </div>
+        <div class="col-md-4 text-center mb-4 mb-md-0">
+            <div class="feature-box p-4">
+                <i class="bi bi-award display-4 text-primary mb-3"></i>
+                <h4>成长收获</h4>
+                <p class="text-muted">获得志愿服务经验，提升个人能力</p>
+            </div>
+        </div>
+        <div class="col-md-4 text-center">
+            <div class="feature-box p-4">
+                <i class="bi bi-hand-thumbs-up display-4 text-primary mb-3"></i>
+                <h4>社会认可</h4>
+                <p class="text-muted">获得志愿服务证书，赢得社会认可</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 活动分类 -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-center flex-wrap">
+                <a href="{% url 'volunteer:activity_list' %}" 
+                   class="btn {% if not category %}btn-primary{% else %}btn-outline-primary{% endif %} m-1">
+                    全部活动
+                </a>
+                {% for cat in categories %}
+                <a href="{% url 'volunteer:activity_list' %}?category={{ cat.id }}" 
+                   class="btn {% if request.GET.category|add:'0' == cat.id %}btn-primary{% else %}btn-outline-primary{% endif %} m-1">
+                    {{ cat.name }}
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 活动列表 -->
+    <div class="row">
+        {% for activity in activities %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 activity-card shadow-sm">
+                {% if activity.image %}
+                <img src="{{ activity.image.url }}" class="card-img-top" alt="{{ activity.title }}">
+                {% else %}
+                <img src="{% static 'images/volunteer-default.jpg' %}" class="card-img-top" alt="Default Activity Image">
+                {% endif %}
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="badge bg-primary">{{ activity.category.name }}</span>
+                        <span class="badge {% if activity.current_volunteers >= activity.required_volunteers %}bg-danger{% else %}bg-success{% endif %}">
+                            {{ activity.current_volunteers }}/{{ activity.required_volunteers }}人
+                        </span>
+                    </div>
+                    <h5 class="card-title">{{ activity.title }}</h5>
+                    <p class="card-text text-muted">{{ activity.description|striptags|truncatechars:100 }}</p>
+                    <div class="mt-3">
+                        <p class="mb-1">
+                            <i class="bi bi-geo-alt"></i> 
+                            <span class="text-muted">地点：</span>{{ activity.location }}
+                        </p>
+                        <p class="mb-1">
+                            <i class="bi bi-calendar-event"></i> 
+                            <span class="text-muted">时间：</span>{{ activity.start_time|date:"Y-m-d H:i" }}
+                        </p>
+                        <p class="mb-0">
+                            <i class="bi bi-clock"></i> 
+                            <span class="text-muted">时长：</span>{{ activity.end_time|timeuntil:activity.start_time }}
+                        </p>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{% url 'volunteer:activity_detail' activity.pk %}" class="btn btn-outline-primary">
+                            了解详情
+                        </a>
+                        {% if activity.current_volunteers >= activity.required_volunteers %}
+                        <button class="btn btn-secondary" disabled>名额已满</button>
+                        {% else %}
+                        <a href="{% url 'volunteer:activity_apply' activity.pk %}" class="btn btn-primary">
+                            立即报名
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                暂无相关活动
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- 分页 -->
+    {% if is_paginated %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% endif %}
+
+            {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                <li class="page-item active">
+                    <span class="page-link">{{ num }}</span>
+                </li>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                    <a class="page-link" href="?page={{ num }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">
+                        {{ num }}
+                    </a>
+                </li>
+                {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

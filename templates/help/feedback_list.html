@@ -1,0 +1,111 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}我的反馈 - 帮助中心 - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'help:help_center' %}">帮助中心</a></li>
+            <li class="breadcrumb-item active" aria-current="page">我的反馈</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="card-title mb-0">我的反馈</h4>
+                    <a href="{% url 'help:feedback_create' %}" class="btn btn-primary">提交新反馈</a>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for feedback in feedbacks %}
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ feedback.title }}</h5>
+                            <small class="text-muted">{{ feedback.created_time|date:"Y-m-d H:i" }}</small>
+                        </div>
+                        <p class="mb-1">{{ feedback.content }}</p>
+                        {% if feedback.status == 'pending' %}
+                        <span class="badge bg-warning">待处理</span>
+                        {% elif feedback.status == 'processing' %}
+                        <span class="badge bg-info">处理中</span>
+                        {% elif feedback.status == 'resolved' %}
+                        <span class="badge bg-success">已解决</span>
+                        {% elif feedback.status == 'closed' %}
+                        <span class="badge bg-secondary">已关闭</span>
+                        {% endif %}
+                        {% if feedback.reply %}
+                        <div class="mt-3 p-3 bg-light rounded">
+                            <small class="text-muted">回复：</small>
+                            <p class="mb-0">{{ feedback.reply }}</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <div class="list-group-item text-center py-4">
+                        <p class="mb-0">您还没有提交过反馈</p>
+                        <a href="{% url 'help:feedback_create' %}" class="btn btn-primary mt-3">提交反馈</a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- 分页 -->
+            {% if is_paginated %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            <!-- 反馈指南 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">反馈指南</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h6><i class="fas fa-lightbulb text-warning me-2"></i>提交建议</h6>
+                        <p class="small text-muted">描述您的建议或想法，帮助我们改进服务</p>
+                    </div>
+                    <div class="mb-4">
+                        <h6><i class="fas fa-bug text-danger me-2"></i>报告问题</h6>
+                        <p class="small text-muted">详细描述您遇到的问题，包括发生时间、具体步骤等</p>
+                    </div>
+                    <div>
+                        <h6><i class="fas fa-clock text-info me-2"></i>处理时间</h6>
+                        <p class="small text-muted">我们会在2个工作日内处理您的反馈</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

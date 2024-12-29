@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}使用指南 - 帮助中心{% endblock %}
+
+{% block extra_css %}
+<style>
+    .guide-sidebar {
+        background: #f8f9fa;
+        border-radius: 10px;
+        padding: 1.5rem;
+    }
+    .guide-category {
+        border: none;
+        margin-bottom: 0.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+    .guide-category:hover {
+        background-color: #e9ecef;
+        transform: translateX(5px);
+    }
+    .guide-category.active {
+        background-color: #0d6efd;
+        color: white;
+        box-shadow: 0 2px 5px rgba(13, 110, 253, 0.2);
+    }
+    .guide-card {
+        border: none;
+        box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    .guide-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.12);
+    }
+    .guide-icon {
+        font-size: 2.5rem;
+        color: #0d6efd;
+        margin-bottom: 1rem;
+    }
+    .guide-title {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+    }
+    .guide-summary {
+        color: #6c757d;
+        line-height: 1.6;
+    }
+    .guide-meta {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+    .guide-link {
+        color: #0d6efd;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .guide-link:hover {
+        color: #0a58ca;
+    }
+    .pagination .page-link {
+        border: none;
+        margin: 0 3px;
+        border-radius: 6px;
+        color: #0d6efd;
+    }
+    .pagination .page-item.active .page-link {
+        background-color: #0d6efd;
+        color: white;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- 侧边栏 -->
+        <div class="col-md-3 mb-4">
+            <div class="guide-sidebar">
+                <h5 class="mb-3">指南分类</h5>
+                <div class="list-group">
+                    <a href="{% url 'help:guide' %}" 
+                       class="list-group-item guide-category {% if not selected_category %}active{% endif %}">
+                        <i class="bi bi-grid me-2"></i>全部指南
+                    </a>
+                    {% for category in categories %}
+                    <a href="?category={{ category.id }}" 
+                       class="list-group-item guide-category {% if selected_category == category %}active{% endif %}">
+                        <i class="bi bi-folder me-2"></i>{{ category.name }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 主要内容 -->
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">
+                    {% if selected_category %}
+                    {{ selected_category.name }}
+                    {% else %}
+                    所有使用指南
+                    {% endif %}
+                </h2>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="{% url 'help:help_center' %}">帮助中心</a></li>
+                        <li class="breadcrumb-item active">使用指南</li>
+                    </ol>
+                </nav>
+            </div>
+            
+            <!-- 指南列表 -->
+            <div class="row">
+                {% for guide in guides %}
+                <div class="col-md-6 mb-4">
+                    <div class="card guide-card">
+                        <div class="card-body p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <span class="badge bg-primary">{{ guide.category.name }}</span>
+                                <div class="guide-meta">
+                                    <i class="bi bi-eye me-1"></i> {{ guide.views }}
+                                    <i class="bi bi-calendar ms-2 me-1"></i> {{ guide.created_at|date:"Y-m-d" }}
+                                </div>
+                            </div>
+                            <div class="text-center mb-3">
+                                <i class="bi bi-book guide-icon"></i>
+                            </div>
+                            <h5 class="guide-title text-center">{{ guide.title }}</h5>
+                            <p class="guide-summary">{{ guide.summary|truncatewords:30 }}</p>
+                            <div class="text-center mt-4">
+                                <a href="{% url 'help:guide_detail' guide.pk %}" class="guide-link">
+                                    查看详情 <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="col">
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle me-2"></i>
+                        暂无相关使用指南。
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- 分页 -->
+            {% if is_paginated %}
+            <nav class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if selected_category %}&category={{ selected_category.id }}{% endif %}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active">
+                        <span class="page-link">{{ num }}</span>
+                    </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ num }}{% if selected_category %}&category={{ selected_category.id }}{% endif %}">
+                            {{ num }}
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if selected_category %}&category={{ selected_category.id }}{% endif %}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

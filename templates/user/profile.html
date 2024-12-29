@@ -1,0 +1,341 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+{% block title %}个人档案 - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-sidebar {
+        position: sticky;
+        top: 20px;
+    }
+    
+    .avatar-wrapper {
+        position: relative;
+        width: 150px;
+        height: 150px;
+        margin: 0 auto;
+    }
+    
+    .avatar-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border: 3px solid var(--primary-color);
+    }
+    
+    .avatar-upload {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        background: var(--primary-color);
+        color: white;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .avatar-upload:hover {
+        transform: scale(1.1);
+    }
+    
+    .nav-link-custom {
+        padding: 0.8rem 1rem;
+        color: var(--text-color);
+        border-radius: 0.25rem;
+        transition: all 0.3s ease;
+    }
+    
+    .nav-link-custom:hover {
+        background-color: rgba(0, 123, 255, 0.1);
+        color: var(--primary-color);
+    }
+    
+    .nav-link-custom.active {
+        background-color: var(--primary-color);
+        color: white;
+    }
+    
+    .nav-link-custom i {
+        width: 20px;
+        text-align: center;
+        margin-right: 8px;
+    }
+    
+    .stats-card {
+        border: none;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,.1);
+        transition: transform 0.3s ease;
+    }
+    
+    .stats-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .stats-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+    }
+    
+    .bg-soft-primary {
+        background-color: rgba(0, 123, 255, 0.1);
+    }
+    
+    .bg-soft-success {
+        background-color: rgba(40, 167, 69, 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <!-- 左侧边栏 -->
+        <div class="col-md-3">
+            <div class="profile-sidebar">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <div class="avatar-wrapper mb-3">
+                            {% if user.userprofile.avatar %}
+                            <img src="{{ user.userprofile.avatar.url }}" alt="头像" class="rounded-circle">
+                            {% else %}
+                            <img src="{% static 'images/default-avatar.png' %}" alt="默认头像" class="rounded-circle">
+                            {% endif %}
+                            <label for="avatar-input" class="avatar-upload">
+                                <i class="fas fa-camera"></i>
+                            </label>
+                            <input type="file" id="avatar-input" class="d-none" accept="image/*">
+                        </div>
+                        <h5 class="card-title mb-1">{{ user.username }}</h5>
+                        <p class="text-muted small mb-0">{{ user.email }}</p>
+                        
+                        <!-- 认证状态 -->
+                        <div class="mt-2">
+                            <!-- 邮箱验证状态 -->
+                            {% if user.userprofile.email_verified %}
+                            <div class="mb-2">
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle me-1"></i>邮箱已验证
+                                </span>
+                            </div>
+                            {% else %}
+                            <div class="mb-2">
+                                <span class="badge bg-warning text-dark mb-1 d-block">
+                                    <i class="fas fa-exclamation-circle me-1"></i>邮箱未验证
+                                </span>
+                                <a href="{% url 'user:resend_verification' %}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-envelope me-1"></i>发送验证邮件
+                                </a>
+                            </div>
+                            {% endif %}
+                            
+                            <!-- 实名认证状态 -->
+                            {% if user.userprofile.is_verified %}
+                            <div>
+                                <span class="badge bg-success">
+                                    <i class="fas fa-check-circle me-1"></i>已实名认证
+                                </span>
+                            </div>
+                            {% else %}
+                            <div>
+                                <a href="{% url 'user:verify_identity' %}" class="badge bg-warning text-dark text-decoration-none">
+                                    <i class="fas fa-exclamation-circle me-1"></i>未实名认证
+                                </a>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="nav flex-column nav-pills mb-4">
+                    <a href="{% url 'user:profile' %}" class="nav-link-custom mb-2 {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
+                        <i class="fas fa-user"></i>个人档案
+                    </a>
+                    <a href="{% url 'user:emergency_contacts' %}" class="nav-link-custom mb-2 {% if request.resolver_match.url_name == 'emergency_contacts' %}active{% endif %}">
+                        <i class="fas fa-phone"></i>紧急联系人
+                    </a>
+                    <a href="{% url 'user:health_info' %}" class="nav-link-custom mb-2 {% if request.resolver_match.url_name == 'health_info' %}active{% endif %}">
+                        <i class="fas fa-heartbeat"></i>健康信息
+                    </a>
+                    <a href="{% url 'user:service_history' %}" class="nav-link-custom mb-2 {% if request.resolver_match.url_name == 'service_history' %}active{% endif %}">
+                        <i class="fas fa-history"></i>服务记录
+                    </a>
+                    <a href="{% url 'user:volunteer_history' %}" class="nav-link-custom mb-2 {% if request.resolver_match.url_name == 'volunteer_history' %}active{% endif %}">
+                        <i class="fas fa-hands-helping"></i>志愿记录
+                    </a>
+                    <a href="{% url 'user:notifications' %}" class="nav-link-custom mb-2 {% if request.resolver_match.url_name == 'notifications' %}active{% endif %}">
+                        <i class="fas fa-bell"></i>通知中心
+                        {% if unread_notifications_count %}
+                        <span class="badge bg-danger float-end">{{ unread_notifications_count }}</span>
+                        {% endif %}
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧内容 -->
+        <div class="col-md-9">
+            <!-- 统计卡片 -->
+            <div class="row mb-4">
+                <div class="col-md-6 mb-4 mb-md-0">
+                    <div class="card stats-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="stats-icon bg-soft-primary text-primary me-3">
+                                    <i class="fas fa-clipboard-list fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h6 class="card-subtitle text-muted mb-1">服务记录</h6>
+                                    <h3 class="card-title mb-0">{{ service_records.count }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card stats-card">
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <div class="stats-icon bg-soft-success text-success me-3">
+                                    <i class="fas fa-hands-helping fa-lg"></i>
+                                </div>
+                                <div>
+                                    <h6 class="card-subtitle text-muted mb-1">志愿记录</h6>
+                                    <h3 class="card-title mb-0">{{ volunteer_records.count }}</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 档案表单 -->
+            <div class="card mb-4">
+                <div class="card-header bg-transparent">
+                    <h5 class="card-title mb-0">个人档案</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                            <button type="reset" class="btn btn-light me-md-2">重置</button>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save me-1"></i>保存修改
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- 服务记录 -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">最近服务记录</h5>
+                    <a href="{% url 'user:service_history' %}" class="btn btn-sm btn-outline-primary">查看全部</a>
+                </div>
+                <div class="card-body">
+                    {% if service_records %}
+                        <div class="list-group list-group-flush">
+                            {% for record in service_records %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">{{ record.service.name }}</h6>
+                                            <small class="text-muted">预约时间：{{ record.appointment_time|date:"Y-m-d H:i" }}</small>
+                                        </div>
+                                        <span class="badge {% if record.status == 'completed' %}bg-success{% elif record.status == 'cancelled' %}bg-danger{% else %}bg-warning{% endif %}">
+                                            {{ record.get_status_display }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center my-3">暂无服务记录</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- 志愿记录 -->
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">最近志愿记录</h5>
+                    <a href="{% url 'user:volunteer_history' %}" class="btn btn-sm btn-outline-primary">查看全部</a>
+                </div>
+                <div class="card-body">
+                    {% if volunteer_records %}
+                        <div class="list-group list-group-flush">
+                            {% for record in volunteer_records %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div>
+                                            <h6 class="mb-1">{{ record.activity.title }}</h6>
+                                            <small class="text-muted">申请时间：{{ record.created_time|date:"Y-m-d H:i" }}</small>
+                                        </div>
+                                        <span class="badge {% if record.status == 'approved' %}bg-success{% elif record.status == 'rejected' %}bg-danger{% else %}bg-warning{% endif %}">
+                                            {{ record.get_status_display }}
+                                        </span>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center my-3">暂无志愿记录</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 调试信息
+    console.log('页面加载完成');
+    console.log('用户信息:', {{ user|safe }});
+    console.log('服务记录:', {{ service_records|safe }});
+    console.log('志愿记录:', {{ volunteer_records|safe }});
+</script>
+
+{% block extra_js %}
+<script>
+document.getElementById('avatar-input').addEventListener('change', function(e) {
+    if (e.target.files && e.target.files[0]) {
+        const formData = new FormData();
+        formData.append('avatar', e.target.files[0]);
+        
+        fetch('{% url "user:update_avatar" %}', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.location.reload();
+            } else {
+                alert('上传失败：' + data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('上传失败，请重试');
+        });
+    }
+});
+</script>
+{% endblock %}
+{% endblock %}

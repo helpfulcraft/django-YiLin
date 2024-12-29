@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ category.name }} - 帮助中心 - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'help:index' %}">帮助中心</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ category.name }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <div class="d-flex align-items-center">
+                        <i class="{{ category.icon }} fa-2x text-primary me-3"></i>
+                        <div>
+                            <h4 class="card-title mb-1">{{ category.name }}</h4>
+                            <p class="card-text text-muted mb-0">{{ category.description }}</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for article in articles %}
+                    <a href="{% url 'help:article' article.pk %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">{{ article.title }}</h5>
+                            <small class="text-muted">{{ article.views }} 次浏览</small>
+                        </div>
+                        <small class="text-muted">{{ article.created_time|date:"Y-m-d" }}</small>
+                    </a>
+                    {% empty %}
+                    <div class="list-group-item">暂无相关文章</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- 分页 -->
+            {% if is_paginated %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                    <li class="page-item active"><a class="page-link" href="#">{{ num }}</a></li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                    <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
+                    {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+
+        <div class="col-md-4">
+            <!-- 快速入口 -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">需要帮助？</h5>
+                    <p class="card-text">如果您没有找到需要的答案，可以直接联系我们</p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'help:consultation_create' %}" class="btn btn-primary">在线咨询</a>
+                        <a href="{% url 'help:feedback_create' %}" class="btn btn-outline-primary">提交反馈</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 其他分类 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">其他分类</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for other_category in category.helpcategory_set.all %}
+                    {% if other_category != category %}
+                    <a href="{% url 'help:category' other_category.pk %}" class="list-group-item list-group-item-action">
+                        <i class="{{ other_category.icon }} me-2"></i>
+                        {{ other_category.name }}
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

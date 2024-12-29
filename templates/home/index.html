@@ -1,0 +1,439 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}首页 - 福祉网站{% endblock %}
+
+{% block extra_css %}
+<style>
+    :root {
+        --primary-color: #4A90E2;
+        --secondary-color: #50E3C2;
+        --accent-color: #F5A623;
+        --background-color: #F8F9FA;
+        --text-color: #333333;
+    }
+
+    /* 全局动画 */
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fade-in-up {
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    /* 轮播图样式 */
+    .carousel-item {
+        height: 600px;
+    }
+    .carousel-item img {
+        object-fit: cover;
+        width: 100%;
+        height: 100%;
+        filter: brightness(0.8);
+    }
+    .carousel-caption {
+        background: linear-gradient(to right, rgba(74, 144, 226, 0.9), rgba(80, 227, 194, 0.9));
+        padding: 2rem;
+        border-radius: 15px;
+        max-width: 600px;
+        margin: 0 auto;
+        bottom: 20%;
+    }
+    .carousel-caption h3 {
+        color: white;
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+    .carousel-caption p {
+        color: white;
+        font-size: 1.2rem;
+        margin-bottom: 1.5rem;
+    }
+    .carousel-caption .btn {
+        padding: 0.8rem 2rem;
+        font-size: 1.1rem;
+        border-radius: 30px;
+        background: white;
+        color: var(--primary-color);
+        border: none;
+        transition: all 0.3s ease;
+    }
+    .carousel-caption .btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    /* 搜索框样式 */
+    .search-section {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        padding: 3rem 0;
+        margin-bottom: 3rem;
+    }
+    .search-box {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 2rem;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    }
+    .search-box form {
+        display: flex;
+        gap: 1rem;
+    }
+    .search-box input {
+        border-radius: 30px;
+        padding: 1.2rem 2rem;
+        border: 2px solid #eee;
+        transition: all 0.3s ease;
+    }
+    .search-box input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+    }
+    .search-box button {
+        border-radius: 30px;
+        padding: 0 2.5rem;
+        font-weight: 600;
+        letter-spacing: 1px;
+        background: var(--primary-color);
+        border: none;
+        transition: all 0.3s ease;
+    }
+    .search-box button:hover {
+        background: var(--secondary-color);
+        transform: translateY(-2px);
+    }
+
+    /* 卡片样式 */
+    .service-card {
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        transition: all 0.3s ease;
+        height: 100%;
+    }
+    .service-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.12);
+    }
+    .card-img-top {
+        height: 240px;
+        object-fit: cover;
+        transition: all 0.3s ease;
+    }
+    .service-card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+    .card-body {
+        padding: 1.5rem;
+    }
+    .card-title {
+        font-size: 1.4rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-color);
+    }
+    .card-text {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 1.5rem;
+    }
+    .card-footer {
+        background: transparent;
+        border-top: none;
+        padding: 1rem 1.5rem 1.5rem;
+    }
+    .card-footer .btn {
+        width: 100%;
+        border-radius: 30px;
+        padding: 0.8rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .card-footer .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(74, 144, 226, 0.2);
+    }
+
+    /* 统计数字样式 */
+    .stats-section {
+        background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        color: white;
+        padding: 4rem 0;
+        margin: 3rem 0;
+        border-radius: 20px;
+    }
+    .stat-icon {
+        font-size: 3rem;
+        margin-bottom: 1.5rem;
+        opacity: 0.9;
+    }
+    .stat-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 0.8rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+    .stat-label {
+        font-size: 1.2rem;
+        opacity: 0.9;
+    }
+    
+    /* 标题样式 */
+    .section-title {
+        position: relative;
+        padding-bottom: 1rem;
+        margin-bottom: 3rem;
+        font-size: 2.2rem;
+        font-weight: bold;
+        text-align: center;
+        color: var(--text-color);
+    }
+    .section-title::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        bottom: 0;
+        transform: translateX(-50%);
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+        border-radius: 2px;
+    }
+
+    /* 响应式调整 */
+    @media (max-width: 768px) {
+        .carousel-item {
+            height: 400px;
+        }
+        .carousel-caption {
+            padding: 1.5rem;
+            bottom: 10%;
+        }
+        .carousel-caption h3 {
+            font-size: 1.8rem;
+        }
+        .carousel-caption p {
+            font-size: 1rem;
+        }
+        .stat-value {
+            font-size: 2rem;
+        }
+        .section-title {
+            font-size: 1.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 轮播图 -->
+<div id="mainCarousel" class="carousel slide" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        {% for carousel in carousels %}
+        <button type="button" data-bs-target="#mainCarousel" data-bs-slide-to="{{ forloop.counter0 }}" 
+                {% if forloop.first %}class="active"{% endif %}
+                aria-current="true" aria-label="Slide {{ forloop.counter }}">
+        </button>
+        {% endfor %}
+    </div>
+    <div class="carousel-inner">
+        {% for carousel in carousels %}
+        <div class="carousel-item {% if forloop.first %}active{% endif %}">
+            <img src="{{ carousel.image.url }}" class="d-block w-100" alt="{{ carousel.title }}">
+            <div class="carousel-caption animate-fade-in-up">
+                <h3>{{ carousel.title }}</h3>
+                <p>{{ carousel.description }}</p>
+                {% if carousel.link %}
+                <a href="{{ carousel.link }}" class="btn btn-light">了解更多</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% if carousels|length > 1 %}
+    <button class="carousel-control-prev" type="button" data-bs-target="#mainCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#mainCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+    {% endif %}
+</div>
+
+<!-- 搜索区域 -->
+<div class="search-section">
+    <div class="container">
+        <div class="search-box animate-fade-in-up">
+            <form action="{% url 'home:search' %}" method="GET" class="d-flex">
+                <input type="search" name="q" class="form-control form-control-lg flex-grow-1" 
+                       placeholder="搜索新闻、活动、服务..." aria-label="搜索">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    <i class="bi bi-search me-2"></i>搜索
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- 最新新闻 -->
+    <section class="mb-5 animate-fade-in-up">
+        <h2 class="section-title">最新新闻</h2>
+        <div class="row">
+            {% for news in news_list %}
+            <div class="col-md-4 mb-4">
+                <div class="card service-card">
+                    {% if news.cover %}
+                    <img src="{{ news.cover.url }}" class="card-img-top" alt="{{ news.title }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ news.title }}</h5>
+                        <p class="card-text">{{ news.summary|truncatewords:30 }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{% url 'news:detail' news.pk %}" class="btn btn-primary">
+                            <i class="bi bi-arrow-right me-2"></i>阅读更多
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <!-- 统计数字 -->
+    <div class="stats-section animate-fade-in-up">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-3 mb-4">
+                    <i class="bi bi-people-fill stat-icon"></i>
+                    <div class="stat-value" data-value="1000">0</div>
+                    <div class="stat-label">注册用户</div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <i class="bi bi-heart-fill stat-icon"></i>
+                    <div class="stat-value" data-value="500">0</div>
+                    <div class="stat-label">志愿者</div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <i class="bi bi-calendar-check-fill stat-icon"></i>
+                    <div class="stat-value" data-value="100">0</div>
+                    <div class="stat-label">活动完成</div>
+                </div>
+                <div class="col-md-3 mb-4">
+                    <i class="bi bi-star-fill stat-icon"></i>
+                    <div class="stat-value" data-value="50">0</div>
+                    <div class="stat-label">合作机构</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 志愿活动 -->
+    <section class="mb-5 animate-fade-in-up">
+        <h2 class="section-title">志愿活动</h2>
+        <div class="row">
+            {% for activity in activities %}
+            <div class="col-md-4 mb-4">
+                <div class="card service-card">
+                    {% if activity.image %}
+                    <img src="{{ activity.image.url }}" class="card-img-top" alt="{{ activity.title }}">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ activity.title }}</h5>
+                        <p class="card-text">{{ activity.description|truncatewords:30 }}</p>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <small class="text-muted">
+                                <i class="bi bi-calendar3 me-2"></i>{{ activity.start_time|date:"Y-m-d" }}
+                            </small>
+                            <small class="text-muted">
+                                <i class="bi bi-people me-2"></i>{{ activity.participants_count }}/{{ activity.max_participants }}
+                            </small>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{% url 'volunteer:detail' activity.pk %}" class="btn btn-primary">
+                            <i class="bi bi-arrow-right me-2"></i>参与活动
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // 数字增长动画
+    function animateValue(obj, start, end, duration) {
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            obj.innerHTML = Math.floor(progress * (end - start) + start);
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+
+    // 监听元素进入视口
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const target = entry.target;
+                const value = parseInt(target.getAttribute('data-value'));
+                animateValue(target, 0, value, 2000);
+                observer.unobserve(target);
+            }
+        });
+    }, {
+        threshold: 0.5
+    });
+
+    // 为所有统计数字添加观察器
+    document.querySelectorAll('.stat-value').forEach(statValue => {
+        observer.observe(statValue);
+    });
+
+    // 添加滚动动画
+    document.addEventListener('DOMContentLoaded', function() {
+        const animateElements = document.querySelectorAll('.animate-fade-in-up');
+        const fadeObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        animateElements.forEach(element => {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(20px)';
+            element.style.transition = 'all 0.6s ease-out';
+            fadeObserver.observe(element);
+        });
+    });
+</script>
+{% endblock %}

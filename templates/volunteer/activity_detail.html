@@ -1,0 +1,252 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% load volunteer_extras %}
+
+{% block title %}{{ activity.title }} - 福祉网站{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home:home' %}">首页</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'volunteer:activity_list' %}">志愿活动</a></li>
+            <li class="breadcrumb-item active">{{ activity.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- 活动详情 -->
+        <div class="col-lg-8">
+            <div class="card shadow-lg mb-4">
+                {% if activity.image %}
+                <img src="{{ activity.image.url }}" class="card-img-top activity-detail-image" alt="{{ activity.title }}">
+                {% endif %}
+                <div class="card-body">
+                    <h2 class="card-title text-primary mb-3">{{ activity.title }}</h2>
+                    
+                    <div class="activity-meta mb-3">
+                        {% if activity.category %}
+                        <span class="badge bg-info me-2">
+                            <i class="fas fa-tag me-1"></i>{{ activity.category.name }}
+                        </span>
+                        {% endif %}
+                        <span class="badge bg-{{ activity.status|status_color }}">
+                            <i class="fas fa-circle me-1"></i>{{ activity.get_status_display }}
+                        </span>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <i class="fas fa-calendar text-primary"></i>
+                                开始时间：{{ activity.start_time|date:"Y-m-d H:i" }}
+                            </p>
+                            <p class="mb-2">
+                                <i class="fas fa-clock text-primary"></i>
+                                结束时间：{{ activity.end_time|date:"Y-m-d H:i" }}
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <i class="fas fa-map-marker-alt text-primary"></i>
+                                地点：{{ activity.location }}
+                            </p>
+                            <p class="mb-2">
+                                <i class="fas fa-users text-primary"></i>
+                                需求人数：{{ activity.required_volunteers }}人
+                                (已报名：{{ approved_applications }}人)
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="activity-content">
+                        <h4 class="text-primary mb-3">活动描述</h4>
+                        {{ activity.description|linebreaks }}
+                    </div>
+
+                    {% if activity.requirements %}
+                    <div class="activity-requirements mt-4">
+                        <h4 class="text-primary mb-3">活动要求</h4>
+                        {{ activity.requirements|linebreaks }}
+                    </div>
+                    {% endif %}
+
+                    <!-- 操作按钮 -->
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        {% if user == activity.organizer %}
+                            <a href="{% url 'volunteer:edit_activity' activity.pk %}" class="btn btn-outline-primary">
+                                编辑活动
+                            </a>
+                            <form action="{% url 'volunteer:delete_activity' activity.pk %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-outline-danger" onclick="return confirm('确定要删除这个活动吗？')">
+                                    删除活动
+                                </button>
+                            </form>
+                        {% elif not user.is_authenticated %}
+                            <a href="{% url 'user:login' %}" class="btn btn-primary">登录后报名</a>
+                        {% elif application %}
+                            {% if application.status == 'pending' %}
+                                <button class="btn btn-secondary" disabled>审核中</button>
+                                <form action="{% url 'volunteer:cancel_application' activity.pk %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger">取消报名</button>
+                                </form>
+                            {% elif application.status == 'approved' %}
+                                <button class="btn btn-success" disabled>已通过</button>
+                                <form action="{% url 'volunteer:cancel_application' activity.pk %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-outline-danger">取消报名</button>
+                                </form>
+                            {% elif application.status == 'rejected' %}
+                                <button class="btn btn-danger" disabled>未通过</button>
+                            {% endif %}
+                        {% else %}
+                            <form action="{% url 'volunteer:activity_apply' activity.pk %}" method="post" class="d-inline">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-primary" {% if activity.is_full %}disabled{% endif %}>
+                                    {% if activity.is_full %}名额已满{% else %}立即报名{% endif %}
+                                </button>
+                            </form>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- 评论区 -->
+            <div class="card shadow-lg">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-comments me-2"></i>活动评论 ({{ comments|length }})
+                    </h4>
+                </div>
+                <div class="card-body">
+                    {% if user.is_authenticated and user_participated and not user_comment %}
+                    <form method="post" action="{% url 'volunteer:add_comment' activity.pk %}" class="mb-4">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="comment" class="form-label">分享你的活动体验</label>
+                            <textarea class="form-control" id="comment" name="content" rows="3" required></textarea>
+                        </div>
+                        <div class="text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane me-2"></i>发表评论
+                            </button>
+                        </div>
+                    </form>
+                    {% endif %}
+
+                    {% if comments %}
+                        {% for comment in comments %}
+                        <div class="review mb-3 pb-3 border-bottom">
+                            <div class="review-header d-flex justify-content-between align-items-center mb-2">
+                                <div class="reviewer-info">
+                                    <strong>{{ comment.user.username }}</strong>
+                                    <span class="text-muted ms-2">{{ comment.created_time|date:"Y-m-d H:i" }}</span>
+                                </div>
+                            </div>
+                            <p class="review-content">{{ comment.content }}</p>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center">暂无评论</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- 侧边栏 -->
+        <div class="col-lg-4">
+            <!-- 活动状态卡片 -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">活动状态</h5>
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <span>报名人数</span>
+                        <span class="badge bg-primary">{{ approved_applications }}/{{ activity.required_volunteers }}</span>
+                    </div>
+                    <div class="progress mb-3">
+                        <div class="progress-bar" role="progressbar" 
+                             style="width: {% widthratio approved_applications activity.required_volunteers 100 %}%"
+                             aria-valuenow="{{ approved_applications }}" 
+                             aria-valuemin="0" 
+                             aria-valuemax="{{ activity.required_volunteers }}">
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span>剩余名额</span>
+                        <span class="badge bg-success">{{ remaining_spots }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 组织者信息 -->
+            {% if activity.organizer %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">组织者信息</h5>
+                    <div class="d-flex align-items-center">
+                        {% if activity.organizer.profile.avatar %}
+                        <img src="{{ activity.organizer.profile.avatar.url }}" class="rounded-circle me-3" alt="组织者头像" style="width: 60px; height: 60px;">
+                        {% else %}
+                        <img src="{% static 'images/default-avatar.png' %}" class="rounded-circle me-3" alt="默认头像" style="width: 60px; height: 60px;">
+                        {% endif %}
+                        <div>
+                            <h6 class="mb-1">{{ activity.organizer.get_full_name|default:activity.organizer.username }}</h6>
+                            <p class="text-muted mb-0">
+                                <small>已组织 {{ activity.organizer.organized_activities.count }} 个活动</small>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">组织者信息</h5>
+                    <p class="text-muted mb-0">该活动暂无组织者信息</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- 活动分类 -->
+            {% if activity.category %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">活动分类</h5>
+                    <a href="{% url 'volunteer:activity_list' %}?category={{ activity.category.name }}" class="text-decoration-none">
+                        <span class="badge bg-primary">{{ activity.category.name }}</span>
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- 相关活动 -->
+            {% if related_activities %}
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">相关活动</h5>
+                    {% for related in related_activities %}
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                <a href="{% url 'volunteer:activity_detail' related.pk %}" class="text-decoration-none">
+                                    {{ related.title }}
+                                </a>
+                            </h6>
+                            <p class="card-text">
+                                <small class="text-muted">
+                                    <i class="bi bi-calendar"></i> {{ related.start_time|date:"Y-m-d" }}
+                                </small>
+                            </p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

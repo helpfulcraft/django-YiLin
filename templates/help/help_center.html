@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}帮助中心 - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h2 class="text-center">帮助中心</h2>
+            <p class="text-center text-muted">为您提供全面的帮助和支持</p>
+        </div>
+    </div>
+
+    <!-- 快速入口 -->
+    <div class="row mb-5">
+        <div class="col-md-3">
+            <div class="card h-100 border-primary">
+                <div class="card-body text-center">
+                    <i class="bi bi-question-circle fa-3x text-primary mb-3"></i>
+                    <h5 class="card-title">常见问题</h5>
+                    <p class="card-text">查看常见问题解答</p>
+                    <a href="{% url 'help:faq' %}" class="btn btn-outline-primary">查看FAQ</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 border-success">
+                <div class="card-body text-center">
+                    <i class="bi bi-book fa-3x text-success mb-3"></i>
+                    <h5 class="card-title">使用指南</h5>
+                    <p class="card-text">了解平台使用方法</p>
+                    <a href="{% url 'help:guide' %}" class="btn btn-outline-success">查看指南</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 border-info">
+                <div class="card-body text-center">
+                    <i class="bi bi-chat-dots fa-3x text-info mb-3"></i>
+                    <h5 class="card-title">在线咨询</h5>
+                    <p class="card-text">联系客服解答疑问</p>
+                    <a href="{% url 'help:consultation_create' %}" class="btn btn-outline-info">立即咨询</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 border-warning">
+                <div class="card-body text-center">
+                    <i class="bi bi-lightbulb fa-3x text-warning mb-3"></i>
+                    <h5 class="card-title">意见反馈</h5>
+                    <p class="card-text">帮助我们做得更好</p>
+                    <a href="{% url 'help:feedback_create' %}" class="btn btn-outline-warning">提交反馈</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- 帮助分类 -->
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0">帮助分类</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                        {% for category in categories %}
+                        <div class="col">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <i class="{{ category.icon }} fa-2x text-primary me-3"></i>
+                                        <h5 class="card-title mb-0">{{ category.name }}</h5>
+                                    </div>
+                                    <p class="card-text text-muted">{{ category.description }}</p>
+                                    <div class="mt-3">
+                                        <a href="{% url 'help:faq' %}?category={{ category.id }}" class="btn btn-outline-primary btn-sm me-2">
+                                            常见问题
+                                        </a>
+                                        <a href="{% url 'help:guide' %}?category={{ category.id }}" class="btn btn-outline-success btn-sm">
+                                            使用指南
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <div class="alert alert-info">暂无帮助分类</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- 使用指南 -->
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">使用指南</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-md-2 g-4">
+                        {% for guide in guides %}
+                        <div class="col">
+                            <div class="card h-100 border-0 shadow-sm">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ guide.title }}</h5>
+                                    <p class="card-text text-muted">{{ guide.content|striptags|truncatewords:20 }}</p>
+                                    <a href="{% url 'help:guide_detail' guide.pk %}" class="btn btn-outline-success btn-sm">
+                                        阅读全文
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="col-12">
+                            <div class="alert alert-info">暂无使用指南</div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧边栏 -->
+        <div class="col-md-4">
+            <!-- 热门文章 -->
+            <div class="card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">热门文章</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for article in popular_articles %}
+                    <a href="{% url 'help:article' article.pk %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ article.title }}</h6>
+                            <small class="text-muted">{{ article.views }} 次浏览</small>
+                        </div>
+                        <small class="text-muted">{{ article.category.name }}</small>
+                    </a>
+                    {% empty %}
+                    <div class="list-group-item">暂无热门文章</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- 最新FAQ -->
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="card-title mb-0">最新FAQ</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for faq in recent_faqs %}
+                    <a href="{% url 'help:faq_detail' faq.pk %}" class="list-group-item list-group-item-action">
+                        <h6 class="mb-1">{{ faq.question }}</h6>
+                        <small class="text-muted">{{ faq.category.name }}</small>
+                    </a>
+                    {% empty %}
+                    <div class="list-group-item">暂无FAQ</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- 最新解决的反馈 -->
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="card-title mb-0">最新解决的反馈</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for feedback in solved_feedbacks %}
+                    <a href="{% url 'help:feedback_detail' feedback.pk %}" class="list-group-item list-group-item-action">
+                        <h6 class="mb-1">{{ feedback.title }}</h6>
+                        <small class="text-muted">{{ feedback.updated_time|date:"Y-m-d" }}</small>
+                    </a>
+                    {% empty %}
+                    <div class="list-group-item">暂无已解决的反馈</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 添加页面样式 -->
+{% block extra_css %}
+<style>
+    .card {
+        transition: transform 0.2s ease-in-out;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .list-group-item {
+        transition: background-color 0.2s ease-in-out;
+    }
+    
+    .list-group-item:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+    }
+    
+    .card-header {
+        border-bottom: 0;
+    }
+    
+    .shadow-sm {
+        box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+    }
+</style>
+{% endblock %}
+{% endblock %}

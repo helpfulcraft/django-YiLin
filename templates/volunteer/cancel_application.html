@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}取消报名 - {{ application.activity.title }} - 福祉网站{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'volunteer:activity_list' %}">志愿活动</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'volunteer:activity_detail' application.activity.pk %}">{{ application.activity.title }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">取消报名</li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title mb-4">取消报名确认</h2>
+            
+            <div class="alert alert-warning">
+                <h5 class="alert-heading">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    确定要取消报名吗？
+                </h5>
+                <p class="mb-0">取消报名后，如果想重新参加活动需要重新提交申请。</p>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">活动信息</h5>
+                    <ul class="list-unstyled mb-0">
+                        <li class="mb-2">
+                            <strong>活动名称：</strong>{{ application.activity.title }}
+                        </li>
+                        <li class="mb-2">
+                            <strong>活动时间：</strong>{{ application.activity.start_time|date:"Y-m-d H:i" }}
+                        </li>
+                        <li>
+                            <strong>申请时间：</strong>{{ application.created_time|date:"Y-m-d H:i" }}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger">确认取消</button>
+                <a href="{% url 'volunteer:activity_detail' application.activity.pk %}" class="btn btn-outline-secondary">返回</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

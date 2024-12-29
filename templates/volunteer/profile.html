@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}志愿者档案{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- 个人信息卡片 -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <img src="{{ user.profile.avatar.url }}" alt="头像" class="rounded-circle mb-3" style="width: 150px; height: 150px; object-fit: cover;">
+                    <h5 class="card-title">{{ user.get_full_name|default:user.username }}</h5>
+                    <p class="text-muted">
+                        志愿者编号：{{ volunteer_profile.volunteer_id }}
+                    </p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'user:profile_edit' %}" class="btn btn-outline-primary">
+                            编辑资料
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 志愿统计 -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-body">
+                    <h5 class="card-title">志愿统计</h5>
+                    <div class="row text-center">
+                        <div class="col-6 mb-3">
+                            <h6 class="text-muted">总时长</h6>
+                            <h4>{{ volunteer_profile.total_hours }}小时</h4>
+                        </div>
+                        <div class="col-6 mb-3">
+                            <h6 class="text-muted">活动次数</h6>
+                            <h4>{{ volunteer_profile.activity_count }}次</h4>
+                        </div>
+                        <div class="col-6">
+                            <h6 class="text-muted">好评率</h6>
+                            <h4>{{ volunteer_profile.rating_percent }}%</h4>
+                        </div>
+                        <div class="col-6">
+                            <h6 class="text-muted">志愿等级</h6>
+                            <h4>{{ volunteer_profile.level }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 活动记录 -->
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header bg-transparent">
+                    <ul class="nav nav-tabs card-header-tabs">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#ongoing" data-bs-toggle="tab">进行中</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#completed" data-bs-toggle="tab">已完成</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="card-body">
+                    <div class="tab-content">
+                        <!-- 进行中的活动 -->
+                        <div class="tab-pane fade show active" id="ongoing">
+                            {% for application in applications %}
+                            {% if application.status == 'approved' and not application.activity.is_completed %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="card-title mb-0">
+                                            <a href="{% url 'volunteer:detail' application.activity.pk %}" class="text-decoration-none">
+                                                {{ application.activity.title }}
+                                            </a>
+                                        </h5>
+                                        <span class="badge bg-primary">进行中</span>
+                                    </div>
+                                    <p class="card-text text-muted">
+                                        <small>
+                                            <i class="bi bi-calendar"></i> {{ application.activity.start_time|date:"Y-m-d H:i" }}
+                                            <br>
+                                            <i class="bi bi-geo-alt"></i> {{ application.activity.location }}
+                                        </small>
+                                    </p>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% empty %}
+                            <div class="alert alert-info">
+                                暂无进行中的活动
+                            </div>
+                            {% endfor %}
+                        </div>
+
+                        <!-- 已完成的活动 -->
+                        <div class="tab-pane fade" id="completed">
+                            {% for application in applications %}
+                            {% if application.activity.is_completed %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="card-title mb-0">
+                                            <a href="{% url 'volunteer:detail' application.activity.pk %}" class="text-decoration-none">
+                                                {{ application.activity.title }}
+                                            </a>
+                                        </h5>
+                                        <span class="badge bg-success">已完成</span>
+                                    </div>
+                                    <p class="card-text text-muted">
+                                        <small>
+                                            <i class="bi bi-calendar"></i> {{ application.activity.start_time|date:"Y-m-d" }} - {{ application.activity.end_time|date:"Y-m-d" }}
+                                            <br>
+                                            <i class="bi bi-clock"></i> 服务时长：{{ application.hours }}小时
+                                        </small>
+                                    </p>
+                                    {% if application.feedback %}
+                                    <p class="card-text">
+                                        <small class="text-muted">
+                                            反馈：{{ application.feedback }}
+                                        </small>
+                                    </p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% empty %}
+                            <div class="alert alert-info">
+                                暂无已完成的活动
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

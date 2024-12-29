@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}服务分类 - 福祉网站{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h1 class="text-center mb-5">服务分类</h1>
+
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-4 g-4">
+        {% for category in categories %}
+        <div class="col">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <i class="{{ category.icon }} display-4 text-primary mb-3"></i>
+                    <h5 class="card-title">{{ category.name }}</h5>
+                    <p class="card-text text-muted">{{ category.description }}</p>
+                    <a href="{% url 'service:list' %}?category={{ category.id }}" class="btn btn-outline-primary">
+                        查看服务
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                暂无服务分类
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- 服务统计 -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title text-center mb-4">服务统计</h5>
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <h3 class="text-primary">{{ total_services }}</h3>
+                            <p class="text-muted">服务总数</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h3 class="text-primary">{{ total_appointments }}</h3>
+                            <p class="text-muted">预约总数</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h3 class="text-primary">{{ total_reviews }}</h3>
+                            <p class="text-muted">评价总数</p>
+                        </div>
+                        <div class="col-md-3">
+                            <h3 class="text-primary">{{ avg_rating|floatformat:1 }}</h3>
+                            <p class="text-muted">平均评分</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

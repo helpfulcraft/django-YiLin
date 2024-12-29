@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ article.title }} - 帮助中心 - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'help:help_center' %}">帮助中心</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'help:category' article.category.pk %}">{{ article.category.name }}</a></li>
+            <li class="breadcrumb-item active" aria-current="page">{{ article.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-8">
+            <article class="card">
+                <div class="card-body">
+                    <h2 class="card-title">{{ article.title }}</h2>
+                    <p class="text-muted mb-4">
+                        <small>
+                            <i class="fas fa-folder me-2"></i>{{ article.category.name }}
+                            <span class="mx-2">|</span>
+                            <i class="fas fa-eye me-2"></i>{{ article.views }} 次浏览
+                            <span class="mx-2">|</span>
+                            <i class="fas fa-clock me-2"></i>{{ article.updated_time|date:"Y-m-d H:i" }}
+                        </small>
+                    </p>
+                    <div class="article-content">
+                        {{ article.content|safe }}
+                    </div>
+                </div>
+            </article>
+
+            <!-- 文章评价 -->
+            <div class="card mt-4">
+                <div class="card-body text-center">
+                    <h5 class="card-title">这篇文章对您有帮助吗？</h5>
+                    <div class="btn-group mt-3" role="group">
+                        <button type="button" class="btn btn-outline-success" onclick="rateArticle('helpful')">
+                            <i class="fas fa-thumbs-up me-2"></i>有帮助
+                        </button>
+                        <button type="button" class="btn btn-outline-danger" onclick="rateArticle('not_helpful')">
+                            <i class="fas fa-thumbs-down me-2"></i>没帮助
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <!-- 快速入口 -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">需要更多帮助？</h5>
+                    <p class="card-text">如果您没有找到需要的答案，可以直接联系我们</p>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'help:consultation_create' %}" class="btn btn-primary">在线咨询</a>
+                        <a href="{% url 'help:feedback_create' %}" class="btn btn-outline-primary">提交反馈</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 相关文章 -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">相关文章</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for related_article in article.category.helparticle_set.all|slice:":5" %}
+                    {% if related_article != article %}
+                    <a href="{% url 'help:article' related_article.pk %}" class="list-group-item list-group-item-action">
+                        {{ related_article.title }}
+                        <small class="text-muted d-block">{{ related_article.views }} 次浏览</small>
+                    </a>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+function rateArticle(rating) {
+    // TODO: 实现文章评价功能
+    alert('感谢您的反馈！');
+}
+</script>
+{% endblock %}
+{% endblock %}

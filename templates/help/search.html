@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}搜索结果 - 帮助中心{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- 搜索框 -->
+    <div class="row mb-5">
+        <div class="col-md-8 mx-auto">
+            <form action="{% url 'help:search' %}" method="get" class="d-flex">
+                <input type="text" name="q" class="form-control form-control-lg" placeholder="搜索帮助内容..." value="{{ query }}">
+                <button type="submit" class="btn btn-primary ms-2">搜索</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 搜索结果 -->
+    {% if query %}
+        <h2 class="mb-4">搜索结果: "{{ query }}"</h2>
+        
+        <!-- 帮助文章结果 -->
+        {% if articles %}
+        <section class="mb-5">
+            <h3 class="mb-4">帮助文章</h3>
+            <div class="row">
+                {% for article in articles %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ article.title }}</h5>
+                            <p class="card-text text-muted">{{ article.summary|truncatewords:30 }}</p>
+                            <a href="{% url 'help:article' article.pk %}" class="btn btn-link">阅读更多</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- FAQ结果 -->
+        {% if faqs %}
+        <section class="mb-5">
+            <h3 class="mb-4">常见问题</h3>
+            <div class="accordion" id="faqAccordion">
+                {% for faq in faqs %}
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="heading{{ faq.id }}">
+                        <button class="accordion-button collapsed" type="button" 
+                                data-bs-toggle="collapse" data-bs-target="#collapse{{ faq.id }}">
+                            {{ faq.question }}
+                        </button>
+                    </h2>
+                    <div id="collapse{{ faq.id }}" class="accordion-collapse collapse" 
+                         data-bs-parent="#faqAccordion">
+                        <div class="accordion-body">
+                            {{ faq.answer|safe }}
+                            <div class="mt-3">
+                                <a href="{% url 'help:faq_detail' faq.pk %}" class="btn btn-link">查看详情</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        <!-- 使用指南结果 -->
+        {% if guides %}
+        <section class="mb-5">
+            <h3 class="mb-4">使用指南</h3>
+            <div class="row">
+                {% for guide in guides %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100">
+                        {% if guide.image %}
+                        <img src="{{ guide.image.url }}" class="card-img-top" alt="{{ guide.title }}">
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ guide.title }}</h5>
+                            <p class="card-text text-muted">{{ guide.summary|truncatewords:30 }}</p>
+                            <a href="{% url 'help:guide_detail' guide.pk %}" class="btn btn-link">查看详情</a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+        {% endif %}
+
+        {% if not articles and not faqs and not guides %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            没有找到与"{{ query }}"相关的内容。请尝试使用其他关键词搜索，或者
+            <a href="{% url 'help:consultation_create' %}" class="alert-link">联系我们</a>获取帮助。
+        </div>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+[
+    {
+        "model": "newsApp.newscategory",
+        "pk": 1,
+        "fields": {
+            "name": "活动新闻",
+            "description": "志愿活动相关新闻",
+            "index": 1
+        }
+    },
+    {
+        "model": "newsApp.newscategory",
+        "pk": 2,
+        "fields": {
+            "name": "公告通知",
+            "description": "网站公告和通知",
+            "index": 2
+        }
+    },
+    {
+        "model": "newsApp.news",
+        "pk": 1,
+        "fields": {
+            "title": "2024年首场志愿活动圆满结束",
+            "summary": "我们的志愿者们用实际行动温暖了整个社区",
+            "content": "<p>在新年伊始，我们组织了一场温暖人心的志愿活动。志愿者们深入社区，为独居老人送去关怀，为需要帮助的家庭提供支持。</p>",
+            "cover": "news/volunteer_activity.jpg",
+            "category": 1,
+            "views": 0,
+            "is_featured": true,
+            "status": "published",
+            "created_time": "2024-01-02T10:00:00Z"
+        }
+    },
+    {
+        "model": "newsApp.news",
+        "pk": 2,
+        "fields": {
+            "title": "关于开展2024年春节慰问活动的通知",
+            "summary": "让我们共同关爱社区中需要帮助的群体",
+            "content": "<p>春节将至，我们计划开展一系列慰问活动，为社区中的困难家庭送去温暖。欢迎广大志愿者积极参与。</p>",
+            "cover": "news/spring_festival.jpg",
+            "category": 2,
+            "views": 0,
+            "is_featured": false,
+            "status": "published",
+            "created_time": "2024-01-03T14:00:00Z"
+        }
+    },
+    {
+        "model": "newsApp.news",
+        "pk": 3,
+        "fields": {
+            "title": "2024年志愿者培训计划公布",
+            "summary": "提升志愿服务质量，打造专业志愿者团队",
+            "content": "<p>为了提高志愿服务的专业性和规范性，我们特制定了2024年度志愿者培训计划。培训内容包括：服务技能、沟通技巧、应急处理等。</p>",
+            "cover": "news/training.jpg",
+            "category": 2,
+            "views": 0,
+            "is_featured": false,
+            "status": "published",
+            "created_time": "2024-01-04T09:00:00Z"
+        }
+    }
+]

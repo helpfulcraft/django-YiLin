@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}紧急联系人 - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'user:profile' %}">个人中心</a></li>
+            <li class="breadcrumb-item active" aria-current="page">紧急联系人</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h4 class="card-title mb-0">紧急联系人</h4>
+                    <a href="{% url 'user:add_emergency_contact' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle me-1"></i>添加联系人
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if contacts %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>姓名</th>
+                                        <th>关系</th>
+                                        <th>电话</th>
+                                        <th>地址</th>
+                                        <th>备注</th>
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for contact in contacts %}
+                                        <tr>
+                                            <td>{{ contact.name }}</td>
+                                            <td>{{ contact.relationship }}</td>
+                                            <td>{{ contact.phone }}</td>
+                                            <td>{{ contact.address|default:'-' }}</td>
+                                            <td>{{ contact.note|default:'-' }}</td>
+                                            <td>
+                                                <div class="btn-group">
+                                                    <a href="{% url 'user:edit_emergency_contact' contact.id %}" class="btn btn-sm btn-outline-primary">
+                                                        <i class="bi bi-pencil"></i>
+                                                    </a>
+                                                    <a href="{% url 'user:delete_emergency_contact' contact.id %}" 
+                                                       class="btn btn-sm btn-outline-danger"
+                                                       onclick="return confirm('确定要删除这个联系人吗？')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i class="bi bi-person-x display-1 text-muted"></i>
+                            <p class="lead mt-3">您还没有添加任何紧急联系人</p>
+                            <a href="{% url 'user:add_emergency_contact' %}" class="btn btn-primary">
+                                <i class="bi bi-plus-circle me-1"></i>添加联系人
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

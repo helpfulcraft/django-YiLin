@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block title %}我的申请 - 福祉网站{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">我的志愿申请</h2>
+
+<div class="table-responsive">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>活动名称</th>
+                <th>申请时间</th>
+                <th>申请状态</th>
+                <th>申请理由</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for application in applications %}
+            <tr>
+                <td>
+                    <a href="{% url 'activity_detail' application.activity.pk %}">
+                        {{ application.activity.title }}
+                    </a>
+                </td>
+                <td>{{ application.created_at|date:"Y-m-d H:i" }}</td>
+                <td>
+                    <span class="badge {% if application.status == 'approved' %}bg-success
+                                     {% elif application.status == 'rejected' %}bg-danger
+                                     {% else %}bg-warning{% endif %}">
+                        {{ application.get_status_display }}
+                    </span>
+                </td>
+                <td>{{ application.apply_reason|truncatechars:50 }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="text-center">
+                    <div class="alert alert-info mb-0">
+                        您还没有提交过志愿申请
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<div class="mt-3">
+    <a href="{% url 'activity_list' %}" class="btn btn-primary">浏览活动</a>
+</div>
+{% endblock %}

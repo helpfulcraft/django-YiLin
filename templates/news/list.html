@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}新闻资讯 - 福祉网站{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- 页面标题和搜索栏 -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2 class="mb-0">新闻资讯</h2>
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="{% url 'home:home' %}">首页</a></li>
+                    <li class="breadcrumb-item active">新闻资讯</li>
+                </ol>
+            </nav>
+        </div>
+        <div class="col-md-4">
+            <form class="d-flex" method="get">
+                <input class="form-control me-2" type="search" placeholder="搜索新闻..." name="q" value="{{ request.GET.q }}">
+                <button class="btn btn-outline-primary" type="submit">搜索</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 分类标签 -->
+    {% if categories %}
+    <div class="mb-4">
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'news:list' %}" class="btn btn-outline-primary {% if not category %}active{% endif %}">
+                全部
+            </a>
+            {% for cat in categories %}
+            <a href="?category={{ cat.id }}" class="btn btn-outline-primary {% if category.id == cat.id %}active{% endif %}">
+                {{ cat.name }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 新闻列表 -->
+    <div class="row">
+        <!-- 左侧新闻列表 -->
+        <div class="col-lg-8">
+            {% for news in news_list %}
+            <div class="card mb-4 shadow-sm">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        {% if news.cover %}
+                        <img src="{{ news.cover.url }}" class="img-fluid rounded-start" alt="{{ news.title }}" style="height: 100%; object-fit: cover;">
+                        {% else %}
+                        <img src="{% static 'images/default_news.jpg' %}" class="img-fluid rounded-start" alt="{{ news.title }}" style="height: 100%; object-fit: cover;">
+                        {% endif %}
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ news.title }}</h5>
+                            <p class="card-text text-muted">{{ news.summary|truncatewords:50 }}</p>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="text-muted small">
+                                    <span><i class="bi bi-calendar"></i> {{ news.created_time|date:"Y-m-d" }}</span>
+                                    <span class="ms-3"><i class="bi bi-eye"></i> {{ news.views|intcomma }}阅读</span>
+                                    {% if news.category %}
+                                    <span class="ms-3"><i class="bi bi-tag"></i> {{ news.category.name }}</span>
+                                    {% endif %}
+                                </div>
+                                <a href="{% url 'news:detail' news.id %}" class="btn btn-primary btn-sm">阅读更多</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="alert alert-info">
+                暂无相关新闻
+            </div>
+            {% endfor %}
+
+            <!-- 分页 -->
+            {% if is_paginated %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+
+                    {% for i in page_obj.paginator.page_range %}
+                        {% if page_obj.number == i %}
+                            <li class="page-item active"><span class="page-link">{{ i }}</span></li>
+                        {% elif i > page_obj.number|add:'-3' and i < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ i }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}">{{ i }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}{% if request.GET.category %}&category={{ request.GET.category }}{% endif %}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+
+        <!-- 右侧边栏 -->
+        <div class="col-lg-4">
+            <!-- 热门新闻 -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0"><i class="bi bi-fire"></i> 热门新闻</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for news in hot_news %}
+                    <a href="{% url 'news:detail' news.id %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h6 class="mb-1 text-truncate">{{ news.title }}</h6>
+                            <small class="text-muted">{{ news.views|intcomma }}阅读</small>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div class="list-group-item">暂无热门新闻</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- 新闻分类 -->
+            {% if categories %}
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="card-title mb-0"><i class="bi bi-folder"></i> 新闻分类</h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for cat in categories %}
+                    <a href="?category={{ cat.id }}" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        {{ cat.name }}
+                        <span class="badge bg-primary rounded-pill">{{ cat.news_set.count }}</span>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

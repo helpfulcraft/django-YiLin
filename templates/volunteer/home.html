@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}首页 - 福祉网站{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- 欢迎信息 -->
+    <div class="jumbotron text-center bg-light p-5 mb-5 rounded">
+        <h1 class="display-4">欢迎来到福祉网站</h1>
+        <p class="lead">我们致力于为社会提供优质的志愿服务，让每个人都能贡献自己的一份力量。</p>
+        <hr class="my-4">
+        <p>立即加入我们的志愿者团队，开始您的公益之旅！</p>
+        <a class="btn btn-primary btn-lg" href="{% url 'volunteer:activity_list' %}" role="button">浏览活动</a>
+        {% if user.is_authenticated %}
+            <a class="btn btn-outline-primary btn-lg" href="{% url 'volunteer:my_applications' %}" role="button">我的申请</a>
+        {% else %}
+            <a class="btn btn-outline-primary btn-lg" href="{% url 'login' %}" role="button">立即登录</a>
+        {% endif %}
+    </div>
+
+    <!-- 最新活动 -->
+    <h2 class="text-center mb-4">最新志愿活动</h2>
+    <div class="row">
+        {% for activity in recent_activities %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">{{ activity.title }}</h5>
+                    <p class="card-text">{{ activity.description|truncatewords:30 }}</p>
+                    <ul class="list-unstyled">
+                        <li><i class="bi bi-calendar"></i> {{ activity.date|date:"Y-m-d" }}</li>
+                        <li><i class="bi bi-geo-alt"></i> {{ activity.location }}</li>
+                        <li><i class="bi bi-people"></i> 需要{{ activity.volunteers_needed }}名志愿者</li>
+                    </ul>
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <a href="{% url 'volunteer:activity_detail' activity.pk %}" class="btn btn-primary">查看详情</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center">
+            <p class="text-muted">暂无活动</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- 关于我们 -->
+    <div class="row mt-5">
+        <div class="col-md-4 mb-4">
+            <div class="text-center">
+                <i class="bi bi-heart-fill text-danger display-4"></i>
+                <h3 class="mt-3">爱心奉献</h3>
+                <p>通过志愿服务传递爱心，让世界更加温暖。</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="text-center">
+                <i class="bi bi-people-fill text-primary display-4"></i>
+                <h3 class="mt-3">团队协作</h3>
+                <p>与其他志愿者一起合作，共同实现目标。</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="text-center">
+                <i class="bi bi-globe text-success display-4"></i>
+                <h3 class="mt-3">社会影响</h3>
+                <p>为建设更美好的社会贡献自己的力量。</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

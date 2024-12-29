@@ -1,0 +1,124 @@
+{% if activities %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>活动名称</th>
+                    <th>申请时间</th>
+                    <th>活动时间</th>
+                    <th>活动地点</th>
+                    <th>服务时长</th>
+                    <th>状态</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for activity in activities %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'volunteer:activity_detail' activity.activity.id %}" class="text-decoration-none">
+                                {{ activity.activity.title }}
+                            </a>
+                        </td>
+                        <td>{{ activity.created_time|date:"Y-m-d H:i" }}</td>
+                        <td>
+                            {{ activity.activity.start_time|date:"Y-m-d H:i" }}
+                            <br>
+                            <small class="text-muted">至</small>
+                            <br>
+                            {{ activity.activity.end_time|date:"Y-m-d H:i" }}
+                        </td>
+                        <td>{{ activity.activity.location }}</td>
+                        <td>{{ activity.activity.duration }} 小时</td>
+                        <td>
+                            {% if activity.status == 'pending' %}
+                                <span class="badge bg-warning text-dark">待审核</span>
+                            {% elif activity.status == 'ongoing' %}
+                                <span class="badge bg-primary">进行中</span>
+                            {% elif activity.status == 'completed' %}
+                                <span class="badge bg-success">已完成</span>
+                            {% elif activity.status == 'cancelled' %}
+                                <span class="badge bg-secondary">已取消</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if activity.status == 'pending' %}
+                                <form method="post" action="{% url 'volunteer:cancel_application' activity.id %}" class="d-inline">
+                                    {% csrf_token %}
+                                    <button type="submit" 
+                                            class="btn btn-sm btn-outline-danger" 
+                                            onclick="return confirm('确定要取消申请吗？')">
+                                        <i class="bi bi-x-circle"></i>
+                                    </button>
+                                </form>
+                            {% elif activity.status == 'completed' %}
+                                <button type="button" 
+                                        class="btn btn-sm btn-outline-primary" 
+                                        data-bs-toggle="modal" 
+                                        data-bs-target="#feedbackModal{{ activity.id }}">
+                                    <i class="bi bi-chat-dots"></i>
+                                </button>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="text-center py-4">
+        <i class="bi bi-inbox display-1 text-muted"></i>
+        <p class="lead mt-3">
+            {% if status == 'pending' %}
+                暂无待审核的志愿申请
+            {% elif status == 'ongoing' %}
+                暂无进行中的志愿活动
+            {% elif status == 'completed' %}
+                暂无已完成的志愿活动
+            {% elif status == 'cancelled' %}
+                暂无已取消的志愿活动
+            {% endif %}
+        </p>
+        <a href="{% url 'volunteer:activity_list' %}" class="btn btn-primary">
+            <i class="bi bi-search me-1"></i>浏览志愿活动
+        </a>
+    </div>
+{% endif %}
+
+<!-- 反馈模态框 -->
+{% for activity in activities %}
+    {% if activity.status == 'completed' %}
+        <div class="modal fade" id="feedbackModal{{ activity.id }}" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">活动反馈</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form method="post" action="{% url 'volunteer:submit_feedback' activity.id %}">
+                            {% csrf_token %}
+                            
+                            <div class="mb-3">
+                                <label for="feedback{{ activity.id }}" class="form-label">活动感想</label>
+                                <textarea class="form-control" id="feedback{{ activity.id }}" name="feedback" rows="4" required></textarea>
+                                <div class="form-text">分享你参与活动的感受和建议</div>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="achievement{{ activity.id }}" class="form-label">活动收获</label>
+                                <textarea class="form-control" id="achievement{{ activity.id }}" name="achievement" rows="3" required></textarea>
+                                <div class="form-text">记录你在活动中的收获和成长</div>
+                            </div>
+                            
+                            <div class="text-end">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                                <button type="submit" class="btn btn-primary">提交反馈</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endfor %}

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}关于我们 - {{ block.super }}{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h1 class="text-center mb-4">{{ title }}</h1>
+                    <div class="text-center mb-4">
+                        <img src="{% static 'images/about-banner.jpg' %}" alt="关于我们" class="img-fluid rounded" style="max-height: 300px;">
+                    </div>
+                    <p class="lead text-center mb-5">{{ description }}</p>
+
+                    <div class="row mb-5">
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3">
+                                <i class="bi bi-heart-fill fs-1 text-primary"></i>
+                            </div>
+                            <h4>我们的使命</h4>
+                            <p>通过志愿服务，让每个人都能感受到社会的温暖</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3">
+                                <i class="bi bi-people-fill fs-1 text-primary"></i>
+                            </div>
+                            <h4>我们的团队</h4>
+                            <p>专业、热情、富有爱心的志愿者团队</p>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="mb-3">
+                                <i class="bi bi-hand-thumbs-up-fill fs-1 text-primary"></i>
+                            </div>
+                            <h4>我们的承诺</h4>
+                            <p>提供优质、可靠的志愿服务</p>
+                        </div>
+                    </div>
+
+                    <div class="mb-5">
+                        <h3 class="mb-4">我们的故事</h3>
+                        <p>福祉网站成立于2024年，是一个致力于促进社会和谐发展的公益平台。我们相信，每个人都有能力为社会做出贡献，通过志愿服务，我们可以让这个世界变得更美好。</p>
+                        <p>我们的平台为志愿者和需要帮助的人搭建了一座桥梁，让爱心和需求能够精准对接。通过专业的服务和完善的管理，我们确保每一次志愿服务都能产生积极的社会影响。</p>
+                    </div>
+
+                    <div class="mb-5">
+                        <h3 class="mb-4">我们的价值观</h3>
+                        <div class="row">
+                            <div class="col-md-6 mb-4">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-check-circle-fill text-success fs-4 me-3"></i>
+                                    <div>
+                                        <h5 class="mb-1">专业服务</h5>
+                                        <p class="mb-0">提供高质量的志愿服务和培训</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-shield-check text-success fs-4 me-3"></i>
+                                    <div>
+                                        <h5 class="mb-1">诚信透明</h5>
+                                        <p class="mb-0">公开透明的运营机制</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-heart-pulse-fill text-success fs-4 me-3"></i>
+                                    <div>
+                                        <h5 class="mb-1">关爱社会</h5>
+                                        <p class="mb-0">传递爱心，温暖社会</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-4">
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-stars text-success fs-4 me-3"></i>
+                                    <div>
+                                        <h5 class="mb-1">持续创新</h5>
+                                        <p class="mb-0">不断改进服务质量和效率</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center">
+                        <a href="{% url 'volunteer:activity_list' %}" class="btn btn-primary me-3">浏览志愿活动</a>
+                        <a href="{% url 'help:consultation_create' %}" class="btn btn-outline-primary">联系我们</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

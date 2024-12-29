@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{% if form.instance.pk %}编辑活动{% else %}创建活动{% endif %} - 福祉网站{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'volunteer:activity_list' %}">志愿活动</a></li>
+            <li class="breadcrumb-item active" aria-current="page">
+                {% if form.instance.pk %}编辑活动{% else %}创建活动{% endif %}
+            </li>
+        </ol>
+    </nav>
+
+    <div class="card">
+        <div class="card-body">
+            <h2 class="card-title mb-4">{% if form.instance.pk %}编辑活动{% else %}创建活动{% endif %}</h2>
+            
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-8">
+                        {{ form|crispy }}
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">提示</h5>
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-2">
+                                        <i class="fas fa-info-circle text-primary"></i>
+                                        请填写完整的活动信息
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-image text-primary"></i>
+                                        建议上传活动宣传图片
+                                    </li>
+                                    <li class="mb-2">
+                                        <i class="fas fa-calendar text-primary"></i>
+                                        请确保活动时间准确
+                                    </li>
+                                    <li>
+                                        <i class="fas fa-users text-primary"></i>
+                                        合理设置所需志愿者人数
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">保存</button>
+                    <a href="{% url 'volunteer:activity_list' %}" class="btn btn-outline-secondary">取消</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // 初始化富文本编辑器
+    if (typeof CKEDITOR !== 'undefined') {
+        CKEDITOR.replace('id_description');
+    }
+</script>
+{% endblock %}

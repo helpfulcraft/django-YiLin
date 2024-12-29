@@ -1,0 +1,56 @@
+[
+    {
+        "model": "volunteerApp.activitycategory",
+        "pk": 1,
+        "fields": {
+            "name": "长者关爱",
+            "description": "为老年人提供陪伴、聊天、生活协助等服务",
+            "order": 1
+        }
+    },
+    {
+        "model": "volunteerApp.activitycategory",
+        "pk": 2,
+        "fields": {
+            "name": "医疗保健",
+            "description": "协助医疗机构开展健康检查、保健知识宣传等活动",
+            "order": 2
+        }
+    },
+    {
+        "model": "volunteerApp.activitycategory",
+        "pk": 3,
+        "fields": {
+            "name": "环境保护",
+            "description": "参与社区环境清洁、绿化维护等环保活动",
+            "order": 3
+        }
+    },
+    {
+        "model": "volunteerApp.activitycategory",
+        "pk": 4,
+        "fields": {
+            "name": "教育支持",
+            "description": "为老年人提供技能培训、知识普及等教育服务",
+            "order": 4
+        }
+    },
+    {
+        "model": "volunteerApp.activitycategory",
+        "pk": 5,
+        "fields": {
+            "name": "文化娱乐",
+            "description": "组织文艺演出、兴趣小组等文化娱乐活动",
+            "order": 5
+        }
+    },
+    {
+        "model": "volunteerApp.activitycategory",
+        "pk": 6,
+        "fields": {
+            "name": "社区服务",
+            "description": "提供社区便民服务、邻里互助等活动",
+            "order": 6
+        }
+    }
+]

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}搜索结果 - 福祉网站{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- 搜索框 -->
+    <div class="row mb-4">
+        <div class="col-md-8 mx-auto">
+            <form action="{% url 'home:search' %}" method="GET" class="d-flex">
+                <input type="search" name="q" class="form-control" value="{{ query }}" placeholder="搜索新闻、活动、服务...">
+                <button type="submit" class="btn btn-primary ms-2">搜索</button>
+            </form>
+        </div>
+    </div>
+
+    {% if query %}
+    <!-- 搜索结果 -->
+    <div class="row">
+        <!-- 新闻结果 -->
+        {% if news %}
+        <div class="col-12 mb-4">
+            <h3>新闻 ({{ news|length }})</h3>
+            <div class="list-group">
+                {% for item in news %}
+                <a href="{% url 'news:detail' item.pk %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ item.title }}</h5>
+                        <small>{{ item.created_time|date }}</small>
+                    </div>
+                    <p class="mb-1">{{ item.content|truncatewords:30 }}</p>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 活动结果 -->
+        {% if activities %}
+        <div class="col-12 mb-4">
+            <h3>志愿活动 ({{ activities|length }})</h3>
+            <div class="list-group">
+                {% for item in activities %}
+                <a href="{% url 'volunteer:activity_detail' item.pk %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ item.title }}</h5>
+                        <small>{{ item.start_time|date }}</small>
+                    </div>
+                    <p class="mb-1">{{ item.description|truncatewords:30 }}</p>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- 服务结果 -->
+        {% if services %}
+        <div class="col-12 mb-4">
+            <h3>服务 ({{ services|length }})</h3>
+            <div class="list-group">
+                {% for item in services %}
+                <a href="{% url 'service:service_detail' item.pk %}" class="list-group-item list-group-item-action">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ item.name }}</h5>
+                    </div>
+                    <p class="mb-1">{{ item.description|truncatewords:30 }}</p>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if not news and not activities and not services %}
+        <div class="col-12 text-center">
+            <p class="lead">未找到与"{{ query }}"相关的内容</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

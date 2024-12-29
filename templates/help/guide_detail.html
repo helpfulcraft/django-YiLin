@@ -1,0 +1,193 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ guide.title }} - 使用指南{% endblock %}
+
+{% block extra_css %}
+<style>
+    .guide-detail {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    .guide-header {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    .guide-meta {
+        font-size: 0.875rem;
+        color: #6c757d;
+    }
+    .guide-content {
+        line-height: 1.8;
+        color: #2c3e50;
+    }
+    .guide-content h2 {
+        color: #2c3e50;
+        margin-top: 2rem;
+        margin-bottom: 1rem;
+        font-size: 1.75rem;
+    }
+    .guide-content h3 {
+        color: #2c3e50;
+        margin-top: 1.5rem;
+        margin-bottom: 1rem;
+        font-size: 1.5rem;
+    }
+    .guide-content p {
+        margin-bottom: 1.2rem;
+    }
+    .guide-content ul, .guide-content ol {
+        margin-bottom: 1.2rem;
+        padding-left: 1.5rem;
+    }
+    .guide-content li {
+        margin-bottom: 0.5rem;
+    }
+    .guide-content img {
+        max-width: 100%;
+        height: auto;
+        border-radius: 8px;
+        margin: 1rem 0;
+    }
+    .guide-content code {
+        background: #f8f9fa;
+        padding: 0.2rem 0.4rem;
+        border-radius: 4px;
+        color: #e83e8c;
+    }
+    .guide-content pre {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 8px;
+        overflow-x: auto;
+        margin: 1rem 0;
+    }
+    .guide-content blockquote {
+        border-left: 4px solid #0d6efd;
+        padding-left: 1rem;
+        margin: 1rem 0;
+        color: #6c757d;
+    }
+    .guide-footer {
+        margin-top: 3rem;
+        padding-top: 2rem;
+        border-top: 1px solid #dee2e6;
+    }
+    .feedback-section {
+        background: #f8f9fa;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+        margin-top: 3rem;
+    }
+    .related-guides {
+        margin-top: 3rem;
+    }
+    .related-guide-card {
+        border: none;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        border-radius: 8px;
+    }
+    .related-guide-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.12);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="guide-detail">
+        <!-- 面包屑导航 -->
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'help:help_center' %}">帮助中心</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'help:guide' %}">使用指南</a></li>
+                <li class="breadcrumb-item active">{{ guide.title }}</li>
+            </ol>
+        </nav>
+
+        <!-- 指南头部 -->
+        <div class="guide-header">
+            <h1 class="mb-3">{{ guide.title }}</h1>
+            <div class="guide-meta d-flex align-items-center">
+                <span class="badge bg-primary me-3">{{ guide.category.name }}</span>
+                <span class="me-3"><i class="bi bi-calendar me-1"></i>{{ guide.created_at|date:"Y-m-d" }}</span>
+                <span class="me-3"><i class="bi bi-eye me-1"></i>{{ guide.views }}次浏览</span>
+                <span><i class="bi bi-person-circle me-1"></i>{{ guide.author }}</span>
+            </div>
+        </div>
+
+        <!-- 指南内容 -->
+        <div class="guide-content">
+            {{ guide.content|safe }}
+        </div>
+
+        <!-- 反馈区域 -->
+        <div class="feedback-section">
+            <h4 class="mb-3">这篇指南对您有帮助吗？</h4>
+            <div class="d-flex justify-content-center gap-2">
+                <button class="btn btn-outline-primary" onclick="submitFeedback('helpful')">
+                    <i class="bi bi-hand-thumbs-up me-1"></i>有帮助
+                </button>
+                <button class="btn btn-outline-secondary" onclick="submitFeedback('not_helpful')">
+                    <i class="bi bi-hand-thumbs-down me-1"></i>需要改进
+                </button>
+            </div>
+        </div>
+
+        <!-- 相关指南 -->
+        {% if related_guides %}
+        <div class="related-guides">
+            <h3 class="mb-4">相关指南</h3>
+            <div class="row">
+                {% for related in related_guides %}
+                <div class="col-md-6 mb-4">
+                    <div class="card related-guide-card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ related.title }}</h5>
+                            <p class="card-text text-muted">{{ related.summary|truncatewords:20 }}</p>
+                            <a href="{% url 'help:guide_detail' related.pk %}" class="btn btn-link p-0">
+                                阅读更多 <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+function submitFeedback(type) {
+    // 发送反馈到后端
+    fetch(`/help/guide/${guide.id}/feedback/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ type: type })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.status === 'success') {
+            alert('感谢您的反馈！');
+        } else {
+            alert('提交反馈时出现错误，请稍后重试。');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('提交反馈时出现错误，请稍后重试。');
+    });
+}
+</script>
+{% endblock %}
+{% endblock %}

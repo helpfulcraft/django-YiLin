@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}消息通知 - 福祉网站{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <!-- 侧边栏 -->
+        <div class="col-md-3">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">通知筛选</h5>
+                    <div class="list-group">
+                        <a href="{% url 'user:notifications' %}" class="list-group-item list-group-item-action {% if not request.GET.type %}active{% endif %}">
+                            全部通知
+                            <span class="badge bg-secondary float-end">{{ notifications.count }}</span>
+                        </a>
+                        <a href="{% url 'user:notifications' %}?type=unread" class="list-group-item list-group-item-action {% if request.GET.type == 'unread' %}active{% endif %}">
+                            未读通知
+                            <span class="badge bg-primary float-end">{{ unread_count }}</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 通知列表 -->
+        <div class="col-md-9">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                    <h5 class="card-title mb-0">消息通知</h5>
+                    {% if unread_count > 0 %}
+                    <form method="post" action="{% url 'user:mark_all_notifications_read' %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-check-all me-1"></i>全部标记为已读
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for notification in notifications %}
+                    <div class="list-group-item {% if not notification.is_read %}list-group-item-light{% endif %}">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <h6 class="mb-1">
+                                {% if not notification.is_read %}
+                                <span class="badge bg-primary me-2">新</span>
+                                {% endif %}
+                                {{ notification.title }}
+                            </h6>
+                            <small class="text-muted">{{ notification.created_at|date:"Y-m-d H:i" }}</small>
+                        </div>
+                        <p class="mb-1">{{ notification.message }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">
+                                <i class="bi 
+                                    {% if notification.notification_type == 'info' %}bi-info-circle text-info
+                                    {% elif notification.notification_type == 'success' %}bi-check-circle text-success
+                                    {% elif notification.notification_type == 'warning' %}bi-exclamation-triangle text-warning
+                                    {% elif notification.notification_type == 'error' %}bi-x-circle text-danger
+                                    {% endif %} me-1"></i>
+                                {{ notification.get_notification_type_display }}
+                            </small>
+                            {% if notification.url %}
+                            <a href="{{ notification.url }}" class="btn btn-sm btn-outline-primary">
+                                <i class="bi bi-box-arrow-up-right me-1"></i>查看详情
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="list-group-item text-center text-muted py-5">
+                        <i class="bi bi-bell-slash display-4 d-block mb-3"></i>
+                        暂无通知消息
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- 分页 -->
+            {% if is_paginated %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                    <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if request.GET.type %}&type={{ request.GET.type }}{% endif %}" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

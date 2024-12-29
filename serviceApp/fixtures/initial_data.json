@@ -1,0 +1,70 @@
+[
+    {
+        "model": "serviceApp.servicecategory",
+        "pk": 1,
+        "fields": {
+            "name": "居家养老",
+            "description": "为老年人提供居家养老服务",
+            "icon": "fas fa-home",
+            "index": 1
+        }
+    },
+    {
+        "model": "serviceApp.servicecategory",
+        "pk": 2,
+        "fields": {
+            "name": "医疗陪护",
+            "description": "提供医院陪护和康复照料服务",
+            "icon": "fas fa-hospital",
+            "index": 2
+        }
+    },
+    {
+        "model": "serviceApp.service",
+        "pk": 1,
+        "fields": {
+            "name": "日常生活照料",
+            "short_description": "提供基础生活照料服务，包括清洁、饮食等",
+            "content": "<p>我们提供专业的居家养老服务，包括：</p><ul><li>日常起居照料</li><li>饮食照料</li><li>卫生清洁</li><li>陪伴聊天</li></ul>",
+            "price": "50.00",
+            "duration": "2小时",
+            "image": "services/daily_care.jpg",
+            "category": 1,
+            "status": "active",
+            "is_featured": true,
+            "created_time": "2024-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "serviceApp.service",
+        "pk": 2,
+        "fields": {
+            "name": "医院陪护",
+            "short_description": "提供专业的医院陪护服务",
+            "content": "<p>我们的医院陪护服务包括：</p><ul><li>日常陪护</li><li>服药提醒</li><li>康复协助</li><li>医嘱跟进</li></ul>",
+            "price": "200.00",
+            "duration": "8小时",
+            "image": "services/hospital_care.jpg",
+            "category": 2,
+            "status": "active",
+            "is_featured": true,
+            "created_time": "2024-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "serviceApp.service",
+        "pk": 3,
+        "fields": {
+            "name": "康复护理",
+            "short_description": "提供专业的康复护理服务",
+            "content": "<p>我们的康复护理服务包括：</p><ul><li>康复训练</li><li>护理指导</li><li>健康监测</li><li>营养建议</li></ul>",
+            "price": "150.00",
+            "duration": "4小时",
+            "image": "services/rehabilitation.jpg",
+            "category": 2,
+            "status": "active",
+            "is_featured": true,
+            "created_time": "2024-01-01T00:00:00Z"
+        }
+    }
+]

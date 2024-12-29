@@ -1,0 +1,138 @@
+[
+    {
+        "model": "helpApp.helpcategory",
+        "pk": 1,
+        "fields": {
+            "name": "新手指南",
+            "description": "帮助新用户快速了解和使用我们的平台",
+            "icon": "bi bi-book",
+            "order": 1
+        }
+    },
+    {
+        "model": "helpApp.helpcategory",
+        "pk": 2,
+        "fields": {
+            "name": "服务相关",
+            "description": "关于我们提供的各项养老服务的常见问题",
+            "icon": "bi bi-heart-pulse",
+            "order": 2
+        }
+    },
+    {
+        "model": "helpApp.helpcategory",
+        "pk": 3,
+        "fields": {
+            "name": "志愿服务",
+            "description": "志愿者活动报名、参与等相关问题",
+            "icon": "bi bi-people",
+            "order": 3
+        }
+    },
+    {
+        "model": "helpApp.helpcategory",
+        "pk": 4,
+        "fields": {
+            "name": "账号管理",
+            "description": "账号注册、登录、安全等相关问题",
+            "icon": "bi bi-person-gear",
+            "order": 4
+        }
+    },
+    {
+        "model": "helpApp.faq",
+        "pk": 1,
+        "fields": {
+            "category": 1,
+            "question": "如何注册成为会员？",
+            "answer": "<p>注册成为会员非常简单，只需要以下几个步骤：</p><ol><li>点击网站右上角的"注册"按钮</li><li>填写基本信息（用户名、邮箱、密码）</li><li>验证邮箱</li><li>完善个人资料</li></ol><p>注册完成后，您就可以享受我们的各项服务了！</p>",
+            "order": 1,
+            "is_published": true
+        }
+    },
+    {
+        "model": "helpApp.faq",
+        "pk": 2,
+        "fields": {
+            "category": 2,
+            "question": "如何预约养老服务？",
+            "answer": "<p>预约服务的步骤如下：</p><ol><li>浏览并选择您需要的服务</li><li>点击"立即预约"按钮</li><li>选择服务时间</li><li>填写预约信息</li><li>确认预约</li></ol><p>预约成功后，我们的工作人员会尽快与您联系确认详情。</p>",
+            "order": 1,
+            "is_published": true
+        }
+    },
+    {
+        "model": "helpApp.faq",
+        "pk": 3,
+        "fields": {
+            "category": 3,
+            "question": "如何参与志愿服务活动？",
+            "answer": "<p>参与志愿服务活动的步骤：</p><ol><li>注册并登录账号</li><li>完善个人资料</li><li>浏览志愿活动列表</li><li>选择感兴趣的活动并报名</li><li>等待活动审核通过</li><li>按时参加活动</li></ol><p>注意：首次参与志愿服务需要进行志愿者认证。</p>",
+            "order": 1,
+            "is_published": true
+        }
+    },
+    {
+        "model": "helpApp.faq",
+        "pk": 4,
+        "fields": {
+            "category": 4,
+            "question": "忘记密码怎么办？",
+            "answer": "<p>如果您忘记了密码，可以通过以下步骤重置：</p><ol><li>点击登录页面的"忘记密码"链接</li><li>输入注册时使用的邮箱</li><li>在邮箱中查收重置密码链接</li><li>点击链接并设置新密码</li></ol><p>如果仍有问题，请联系客服协助处理。</p>",
+            "order": 1,
+            "is_published": true
+        }
+    },
+    {
+        "model": "helpApp.helparticle",
+        "pk": 1,
+        "fields": {
+            "category": 1,
+            "title": "平台使用指南",
+            "content": "<h3>欢迎使用我们的养老服务平台！</h3><p>本指南将帮助您了解平台的主要功能和使用方法。</p><h4>1. 首页功能</h4><ul><li>浏览特色服务</li><li>查看最新活动</li><li>了解平台动态</li></ul><h4>2. 服务预约</h4><p>我们提供多种养老服务，包括：</p><ul><li>居家照护</li><li>康复护理</li><li>心理慰藉</li></ul><h4>3. 志愿服务</h4><p>您可以作为志愿者参与到各种活动中。</p><h4>4. 个人中心</h4><p>管理您的个人信息、订单和活动记录。</p>",
+            "is_published": true
+        }
+    },
+    {
+        "model": "helpApp.helparticle",
+        "pk": 2,
+        "fields": {
+            "category": 2,
+            "title": "服务预约指南",
+            "content": "<h3>如何预约合适的养老服务？</h3><p>本指南将帮助您轻松完成服务预约。</p><h4>1. 选择服务</h4><ul><li>浏览服务类别</li><li>查看服务详情</li><li>了解服务评价</li></ul><h4>2. 预约流程</h4><ol><li>选择服务时间</li><li>填写预约信息</li><li>确认预约</li></ol><h4>3. 注意事项</h4><ul><li>请提前24小时预约</li><li>如需取消请提前告知</li><li>准备好相关证件</li></ul>",
+            "is_published": true
+        }
+    },
+    {
+        "model": "helpApp.helparticle",
+        "pk": 3,
+        "fields": {
+            "category": 3,
+            "title": "志愿者服务指南",
+            "content": "<h3>成为志愿者，传递温暖与关爱</h3><p>本指南将帮助您了解如何参与志愿服务。</p><h4>1. 成为志愿者</h4><ul><li>注册账号</li><li>完善资料</li><li>志愿者认证</li></ul><h4>2. 参与活动</h4><ol><li>浏览活动列表</li><li>报名感兴趣的活动</li><li>等待审核通过</li><li>参加活动</li></ol><h4>3. 志愿者守则</h4><ul><li>准时参加活动</li><li>热心服务他人</li><li>遵守活动规则</li></ul>",
+            "is_published": true
+        }
+    },
+    {
+        "model": "helpApp.guide",
+        "pk": 1,
+        "fields": {
+            "category": 1,
+            "title": "新手入门：快速上手指南",
+            "content": "<h3>欢迎加入我们的平台！</h3><p>这份快速上手指南将帮助您了解平台的基本功能。</p><h4>第一步：注册登录</h4><ul><li>注册账号</li><li>完善个人资料</li><li>了解平台功能</li></ul><h4>第二步：浏览服务</h4><ul><li>查看服务分类</li><li>了解服务详情</li><li>阅读用户评价</li></ul><h4>第三步：开始使用</h4><ul><li>预约服务</li><li>参与活动</li><li>提供反馈</li></ul>",
+            "order": 1,
+            "is_published": true
+        }
+    },
+    {
+        "model": "helpApp.guide",
+        "pk": 2,
+        "fields": {
+            "category": 2,
+            "title": "服务预约完全指南",
+            "content": "<h3>如何预约最适合的服务？</h3><p>本指南将帮助您找到并预约最合适的服务。</p><h4>1. 了解服务类型</h4><ul><li>居家照护服务</li><li>康复护理服务</li><li>心理慰藉服务</li></ul><h4>2. 选择合适服务</h4><ul><li>查看服务详情</li><li>了解服务时长</li><li>查看价格信息</li></ul><h4>3. 预约服务</h4><ol><li>选择服务时间</li><li>填写联系方式</li><li>确认预约信息</li></ol>",
+            "order": 2,
+            "is_published": true
+        }
+    }
+]

@@ -1,0 +1,174 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}居家养老服务 - 福祉网站{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="display-4">居家养老服务</h1>
+        <p class="lead text-muted">为老年人提供专业的居家养老服务，让老年人在熟悉的环境中安享晚年</p>
+    </div>
+
+    <!-- 服务特点 -->
+    <div class="row mb-5">
+        <div class="col-md-4">
+            <div class="text-center mb-4">
+                <i class="fas fa-home fa-3x text-primary mb-3"></i>
+                <h3>熟悉环境</h3>
+                <p class="text-muted">在自己熟悉的家庭环境中接受照护，保持生活习惯</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center mb-4">
+                <i class="fas fa-user-nurse fa-3x text-primary mb-3"></i>
+                <h3>专业照护</h3>
+                <p class="text-muted">由专业的养老护理人员提供一对一的贴心服务</p>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="text-center mb-4">
+                <i class="fas fa-clock fa-3x text-primary mb-3"></i>
+                <h3>灵活时间</h3>
+                <p class="text-muted">根据需求灵活安排服务时间，提供全天候照护</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 服务列表 -->
+    <div class="row">
+        {% for service in services %}
+        <div class="col-md-6 col-lg-4 mb-4">
+            <div class="card h-100 shadow-sm">
+                <img src="{{ service.image.url }}" class="card-img-top" alt="{{ service.name }}" style="height: 200px; object-fit: cover;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ service.name }}</h5>
+                    <p class="card-text">{{ service.short_description }}</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="text-primary">
+                            <strong>¥{{ service.price }}</strong>
+                            <small class="text-muted">/次</small>
+                        </div>
+                        <small class="text-muted">{{ service.duration }}</small>
+                    </div>
+                </div>
+                <div class="card-footer bg-transparent border-top-0">
+                    <a href="{{ service.get_absolute_url }}" class="btn btn-primary w-100">了解详情</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info text-center">
+                暂无相关服务
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- 服务流程 -->
+    <div class="mt-5">
+        <h2 class="text-center mb-4">服务流程</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="timeline">
+                    <div class="row g-0">
+                        <div class="col-md-6">
+                            <div class="timeline-step">
+                                <div class="timeline-content">
+                                    <div class="inner-circle">1</div>
+                                    <h5 class="mt-3">需求评估</h5>
+                                    <p class="text-muted">专业人员上门评估老年人的具体需求</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="timeline-step">
+                                <div class="timeline-content">
+                                    <div class="inner-circle">2</div>
+                                    <h5 class="mt-3">制定方案</h5>
+                                    <p class="text-muted">根据评估结果制定个性化的照护方案</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row g-0">
+                        <div class="col-md-6">
+                            <div class="timeline-step">
+                                <div class="timeline-content">
+                                    <div class="inner-circle">3</div>
+                                    <h5 class="mt-3">匹配人员</h5>
+                                    <p class="text-muted">选派专业的养老护理人员提供服务</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="timeline-step">
+                                <div class="timeline-content">
+                                    <div class="inner-circle">4</div>
+                                    <h5 class="mt-3">持续跟进</h5>
+                                    <p class="text-muted">定期回访和评估，及时调整服务方案</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 自定义样式 -->
+{% block extra_css %}
+<style>
+    .timeline {
+        position: relative;
+        padding: 40px 0;
+    }
+    
+    .timeline::before {
+        content: '';
+        position: absolute;
+        width: 2px;
+        background: #e9ecef;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        margin-left: -1px;
+    }
+    
+    .timeline-step {
+        padding: 0 40px;
+        margin-bottom: 30px;
+    }
+    
+    .timeline-content {
+        position: relative;
+        text-align: center;
+    }
+    
+    .inner-circle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        background: #007bff;
+        border-radius: 50%;
+        color: white;
+        font-weight: bold;
+    }
+    
+    @media (max-width: 767.98px) {
+        .timeline::before {
+            left: 40px;
+        }
+        
+        .timeline-step {
+            padding-left: 80px;
+            padding-right: 0;
+        }
+    }
+</style>
+{% endblock %}
+{% endblock %}

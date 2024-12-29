@@ -1,0 +1,273 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load news_extras %}
+
+{% block title %}新闻资讯 - {{ block.super }}{% endblock %}
+
+{% block extra_css %}
+<style>
+    .news-header {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+        padding: 4rem 0;
+        margin-bottom: 3rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .news-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='rgba(255,255,255,.075)' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.1;
+    }
+
+    .pagination-rounded .page-link {
+        border-radius: 50% !important;
+        margin: 0 3px;
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.875rem;
+        padding: 0;
+    }
+
+    .pagination-rounded .page-item.active .page-link {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        color: white;
+        box-shadow: 0 2px 5px rgba(13, 110, 253, 0.2);
+    }
+
+    .pagination-rounded .page-link:hover {
+        background-color: #e9ecef;
+        border-color: #dee2e6;
+        color: #0d6efd;
+    }
+
+    .pagination-rounded .page-item.active .page-link:hover {
+        background-color: #0d6efd;
+        color: white;
+    }
+
+    .pagination-info {
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+
+    .news-card {
+        transition: transform 0.2s ease-in-out;
+        border: none;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+
+    .news-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .news-card .card-img-top {
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .news-title {
+        font-size: 1.25rem;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+        color: #2c3e50;
+    }
+
+    .news-excerpt {
+        color: #6c757d;
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+
+    .news-meta {
+        font-size: 0.75rem;
+        color: #6c757d;
+    }
+
+    .news-meta span {
+        margin-right: 1rem;
+    }
+
+    .search-box {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 1rem;
+        padding: 1.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .news-header {
+            padding: 3rem 0;
+        }
+        
+        .pagination-rounded .page-link {
+            width: 32px;
+            height: 32px;
+            font-size: 0.8rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- 新闻头部 -->
+<header class="news-header">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h1 class="display-4 mb-4">新闻资讯</h1>
+                <p class="lead mb-5">了解最新社区动态，掌握服务信息</p>
+                <div class="search-box">
+                    <form method="get" class="row g-3">
+                        <div class="col-md-5">
+                            <input type="text" name="q" class="form-control" placeholder="搜索新闻..." value="{{ request.GET.q }}">
+                        </div>
+                        <div class="col-md-5">
+                            <select name="category" class="form-select category-select">
+                                <option value="">所有分类</option>
+                                {% for category in categories %}
+                                <option value="{{ category.id }}" {% if request.GET.category == category.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ category.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <button type="submit" class="btn btn-light w-100">搜索</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="container pb-5">
+    <!-- 置顶新闻 -->
+    {% if pinned_news and not request.GET.q and not request.GET.category %}
+    <div class="featured-news mb-5">
+        <div class="card shadow-sm">
+            <div class="row g-0">
+                <div class="col-lg-6">
+                    {% if pinned_news.0.cover %}
+                        <img src="{{ pinned_news.0.cover.url }}" alt="{{ pinned_news.0.title }}" class="img-fluid h-100" style="object-fit: cover;">
+                    {% endif %}
+                </div>
+                <div class="col-lg-6">
+                    <div class="card-body p-4">
+                        <div class="d-flex align-items-center mb-3">
+                            <span class="badge bg-primary me-2">
+                                <i class="bi bi-pin-angle-fill me-1"></i>置顶新闻
+                            </span>
+                            <span class="text-muted small">
+                                <i class="bi bi-calendar3 me-1"></i>{{ pinned_news.0.publish_time|date:"Y-m-d" }}
+                            </span>
+                            <span class="text-muted small ms-3">
+                                <i class="bi bi-eye me-1"></i>{{ pinned_news.0.views }} 次阅读
+                            </span>
+                        </div>
+                        <h2 class="card-title h4 mb-3">{{ pinned_news.0.title }}</h2>
+                        <p class="card-text text-muted mb-4">{{ pinned_news.0.content|striptags|truncatechars:200 }}</p>
+                        <a href="{% url 'news:detail' pinned_news.0.id %}" class="btn btn-primary">
+                            阅读更多 <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- 新闻列表 -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for news in news_list %}
+        <div class="col">
+            <div class="news-card h-100">
+                {% if news.cover %}
+                    <img src="{{ news.cover.url }}" class="card-img-top" alt="{{ news.title }}">
+                {% else %}
+                    <img src="{% static 'images/default_news.jpg' %}" class="card-img-top" alt="{{ news.title }}">
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <div class="news-meta mb-2">
+                        <span><i class="bi bi-calendar3 me-2"></i>{{ news.publish_time|date:"Y-m-d" }}</span>
+                        <span><i class="bi bi-eye me-2"></i>{{ news.views }} 次阅读</span>
+                    </div>
+                    <h3 class="news-title">{{ news.title }}</h3>
+                    <p class="news-excerpt flex-grow-1">{{ news.content|striptags|truncatewords:30 }}</p>
+                    <a href="{% url 'news:detail' news.id %}" class="btn btn-outline-primary mt-auto">阅读更多</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center py-5">
+            <i class="bi bi-inbox display-1 text-muted"></i>
+            <h3 class="mt-3">暂无相关新闻</h3>
+            <p class="text-muted">请尝试其他搜索条件</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- 分页 -->
+    {% if is_paginated %}
+    <nav aria-label="新闻分页" class="my-5">
+        <div class="d-flex justify-content-between align-items-center flex-wrap">
+            <div class="pagination-info mb-3 mb-md-0">
+                <p class="text-muted mb-0">
+                    共 {{ paginator.count }} 条新闻，当前第 {{ page_obj.number }}/{{ paginator.num_pages }} 页
+                </p>
+            </div>
+            <ul class="pagination pagination-rounded mb-0">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}page=1" aria-label="首页">
+                            <i class="bi bi-chevron-double-left"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}page={{ page_obj.previous_page_number }}" aria-label="上一页">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                {% endif %}
+
+                {% for num in paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <li class="page-item active">
+                            <span class="page-link">{{ num }}</span>
+                        </li>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}page={{ num }}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}page={{ page_obj.next_page_number }}" aria-label="下一页">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?{% if request.GET.q %}q={{ request.GET.q }}&{% endif %}{% if request.GET.category %}category={{ request.GET.category }}&{% endif %}page={{ paginator.num_pages }}" aria-label="末页">
+                            <i class="bi bi-chevron-double-right"></i>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

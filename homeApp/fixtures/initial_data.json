@@ -1,0 +1,154 @@
+[
+    {
+        "model": "homeApp.banner",
+        "pk": 1,
+        "fields": {
+            "title": "欢迎来到福祉网站",
+            "description": "让我们一起为社会贡献力量",
+            "image": "banners/banner1.jpg",
+            "url": "",
+            "index": 1,
+            "is_active": true,
+            "add_time": "2024-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "homeApp.banner",
+        "pk": 2,
+        "fields": {
+            "title": "志愿服务",
+            "description": "加入我们，传递爱心",
+            "image": "banners/banner2.jpg",
+            "url": "",
+            "index": 2,
+            "is_active": true,
+            "add_time": "2024-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "homeApp.banner",
+        "pk": 3,
+        "fields": {
+            "title": "社区关爱",
+            "description": "共建温暖社区",
+            "image": "banners/banner3.jpg",
+            "url": "",
+            "index": 3,
+            "is_active": true,
+            "add_time": "2024-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "homeApp.servicehighlight",
+        "pk": 1,
+        "fields": {
+            "title": "志愿服务",
+            "description": "提供多样化的志愿服务机会",
+            "icon": "fas fa-hands-helping",
+            "index": 1,
+            "is_active": true
+        }
+    },
+    {
+        "model": "homeApp.servicehighlight",
+        "pk": 2,
+        "fields": {
+            "title": "专业指导",
+            "description": "经验丰富的专业团队提供指导",
+            "icon": "fas fa-chalkboard-teacher",
+            "index": 2,
+            "is_active": true
+        }
+    },
+    {
+        "model": "homeApp.servicehighlight",
+        "pk": 3,
+        "fields": {
+            "title": "便捷报名",
+            "description": "简单快捷的在线报名流程",
+            "icon": "fas fa-clipboard-list",
+            "index": 3,
+            "is_active": true
+        }
+    },
+    {
+        "model": "homeApp.statistic",
+        "pk": 1,
+        "fields": {
+            "title": "注册志愿者",
+            "value": "1200+",
+            "icon": "fas fa-users",
+            "index": 1,
+            "is_active": true
+        }
+    },
+    {
+        "model": "homeApp.statistic",
+        "pk": 2,
+        "fields": {
+            "title": "进行中的活动",
+            "value": "50+",
+            "icon": "fas fa-calendar-alt",
+            "index": 2,
+            "is_active": true
+        }
+    },
+    {
+        "model": "homeApp.statistic",
+        "pk": 3,
+        "fields": {
+            "title": "合作机构",
+            "value": "100+",
+            "icon": "fas fa-handshake",
+            "index": 3,
+            "is_active": true
+        }
+    },
+    {
+        "model": "homeApp.statistic",
+        "pk": 4,
+        "fields": {
+            "title": "服务时长",
+            "value": "5000+",
+            "icon": "fas fa-clock",
+            "index": 4,
+            "is_active": true
+        }
+    },
+    {
+        "model": "homeApp.activity",
+        "pk": 1,
+        "fields": {
+            "title": "社区清洁日",
+            "description": "一起来美化我们的社区环境",
+            "image": "activities/activity1.jpg",
+            "content": "<p>让我们携手美化社区环境，创造更好的生活空间。</p>",
+            "start_time": "2024-01-15T09:00:00Z",
+            "end_time": "2024-01-15T16:00:00Z",
+            "location": "幸福社区",
+            "volunteers_needed": 20,
+            "volunteers_registered": 5,
+            "is_active": true,
+            "is_featured": true,
+            "created_time": "2024-01-01T00:00:00Z"
+        }
+    },
+    {
+        "model": "homeApp.activity",
+        "pk": 2,
+        "fields": {
+            "title": "爱心助老",
+            "description": "为社区老人提供关爱和帮助",
+            "image": "activities/activity2.jpg",
+            "content": "<p>为社区老人提供生活帮助和精神慰藉。</p>",
+            "start_time": "2024-01-20T14:00:00Z",
+            "end_time": "2024-01-20T17:00:00Z",
+            "location": "阳光养老院",
+            "volunteers_needed": 10,
+            "volunteers_registered": 3,
+            "is_active": true,
+            "is_featured": true,
+            "created_time": "2024-01-02T00:00:00Z"
+        }
+    }
+]

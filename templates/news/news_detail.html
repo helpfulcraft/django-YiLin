@@ -1,0 +1,198 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ news.title }} - 福祉网站{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- 面包屑导航 -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home:home' %}">首页</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'news:list' %}">新闻资讯</a></li>
+            <li class="breadcrumb-item"><a href="{% url 'news:list' %}?category={{ news.category.id }}">{{ news.category.name }}</a></li>
+            <li class="breadcrumb-item active">{{ news.title }}</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <!-- 主要内容 -->
+        <div class="col-lg-8">
+            <article class="card shadow-sm">
+                {% if news.cover %}
+                <img src="{{ news.cover.url }}" class="card-img-top" alt="{{ news.title }}" style="max-height: 400px; object-fit: cover;">
+                {% endif %}
+                
+                <div class="card-body">
+                    <h1 class="card-title h2 mb-4">{{ news.title }}</h1>
+                    
+                    <!-- 文章信息 -->
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <span class="badge bg-primary me-2">{{ news.category.name }}</span>
+                            <small class="text-muted">
+                                <i class="bi bi-calendar3"></i> {{ news.created_time|date:"Y-m-d H:i" }}
+                            </small>
+                        </div>
+                        <div>
+                            <small class="text-muted">
+                                <i class="bi bi-eye me-1"></i>{{ news.views }}
+                                <i class="bi bi-chat-dots ms-3 me-1"></i>{{ news.comments.count }}
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <!-- 文章摘要 -->
+                    <div class="card bg-light mb-4">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="bi bi-bookmark-star"></i> 摘要
+                            </h5>
+                            <p class="card-text">{{ news.summary }}</p>
+                        </div>
+                    </div>
+                    
+                    <!-- 文章内容 -->
+                    <div class="news-content">
+                        {{ news.content|safe }}
+                    </div>
+                </div>
+            </article>
+
+            <!-- 评论区 -->
+            <div class="card shadow-sm mt-4">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-chat-square-text"></i> 评论区
+                    </h5>
+                </div>
+                <div class="card-body">
+                    {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'news:add_comment' news.pk %}" class="mb-4">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="content" class="form-label">发表评论</label>
+                            <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send"></i> 提交评论
+                        </button>
+                    </form>
+                    {% else %}
+                    <div class="alert alert-info">
+                        请<a href="{% url 'user:login' %}?next={{ request.path }}" class="alert-link">登录</a>后发表评论
+                    </div>
+                    {% endif %}
+
+                    <!-- 评论列表 -->
+                    <div class="comments-list">
+                        {% for comment in news.comments.all %}
+                        <div class="d-flex mb-4">
+                            <img src="{{ comment.author.userprofile.avatar.url }}" class="rounded-circle me-3" width="48" height="48">
+                            <div class="flex-grow-1">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ comment.author.username }}</h6>
+                                        <small class="text-muted">{{ comment.created_time|date:"Y-m-d H:i" }}</small>
+                                    </div>
+                                    {% if user.is_authenticated and user == comment.author or user.is_staff %}
+                                    <div>
+                                        <form action="{% url 'news:delete_comment' news.pk comment.pk %}" method="post" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                                    onclick="return confirm('确定要删除这条评论吗？');">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <p class="mb-0">{{ comment.content }}</p>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div class="text-center text-muted">
+                            <i class="bi bi-chat-square"></i> 暂无评论
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 侧边栏 -->
+        <div class="col-lg-4">
+            <!-- 相关新闻 -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-link-45deg"></i> 相关新闻
+                    </h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for related in related_news %}
+                    <a href="{% url 'news:detail' related.pk %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ related.title }}</h6>
+                            <small class="text-muted">{{ related.created_time|date:"m-d" }}</small>
+                        </div>
+                        <small class="text-muted">
+                            <i class="bi bi-eye me-1"></i>{{ related.views }}
+                            <i class="bi bi-chat-dots ms-2 me-1"></i>{{ related.comments.count }}
+                        </small>
+                    </a>
+                    {% empty %}
+                    <div class="list-group-item text-center text-muted">
+                        暂无相关新闻
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- 热门新闻 -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h5 class="card-title mb-0">
+                        <i class="bi bi-fire"></i> 热门新闻
+                    </h5>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for hot in hot_news %}
+                    <a href="{% url 'news:detail' hot.pk %}" class="list-group-item list-group-item-action">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">{{ hot.title }}</h6>
+                            <small class="text-muted">{{ hot.views }} 阅读</small>
+                        </div>
+                    </a>
+                    {% empty %}
+                    <div class="list-group-item text-center text-muted">
+                        暂无热门新闻
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.news-content {
+    line-height: 1.8;
+    font-size: 1.1rem;
+}
+.news-content img {
+    max-width: 100%;
+    height: auto;
+    margin: 1rem 0;
+}
+.news-content p {
+    margin-bottom: 1.5rem;
+}
+.comments-list {
+    max-height: 600px;
+    overflow-y: auto;
+}
+</style>
+{% endblock %}
